@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 28 29% 13%; /* #2C2118 */
+    --foreground: 0 0% 98%;
+
+    --card: 28 29% 17%; /* Slightly lighter than background */
+    --card-foreground: 0 0% 98%;
+
+    --popover: 28 29% 13%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 48 100% 50%; /* #FFCC00 */
+    --primary-foreground: 28 29% 13%; /* Dark text on yellow background */
+
+    --secondary: 24 100% 41%; /* Accent color */
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 28 29% 25%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: 48 100% 50%;
+    --accent-foreground: 28 29% 13%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 28 29% 25%;
+    --input: 28 29% 25%;
+    --ring: 48 100% 50%;
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    /* Soft golden bokeh effects can be added dynamically with divs or a background image */
+  }
+}
+
+/* Custom Utilities for the Diamond Frame */
+.diamond-frame {
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  display: inline-block;
+  position: relative;
+}
+
+.diamond-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

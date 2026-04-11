@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Category {
+  id    String @id @default(cuid())
+  name  String @unique
+  items MenuItem[]
+}
+
+model MenuItem {
+  id          String   @id @default(cuid())
+  name        String
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  prices      String   // Storing pricing as a JSON string for SQLite simplicity
+  note        String?
+  onOrder     Boolean  @default(false) // For items where price is "on request"
+}
+
+model Order {
+  id            String   @id @default(cuid())
+  customerName  String
+  customerEmail String
+  customerPhone String
+  method        String   // "pickup" | "delivery"
+  address       String?  // For delivery
+  items         String   // JSON string of cart items
+  total         Float
+  status        String   @default("pending") // pending, preparing, ready, delivered
+  createdAt     DateTime @default(now())
+}
