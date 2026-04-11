@@ -80,7 +80,7 @@ export default function MenuPage() {
                   {/* Diamond Image Frame overlapping the top of the card */}
                   <div className="absolute -top-12 diamond-frame border-[4px] border-primary w-32 h-32 md:w-40 md:h-40 shadow-[0_0_15px_rgba(255,204,0,0.5)] bg-wood group-hover:-translate-y-2 transition-transform duration-500 z-10 flex-shrink-0">
                     <Image 
-                      src={`https://picsum.photos/seed/${item.name.replace(/\s/g, '')}/400/400`}
+                      src={item.image}
                       alt={item.name}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
