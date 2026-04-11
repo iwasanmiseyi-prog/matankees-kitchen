@@ -41,7 +41,7 @@ export default function HomePage() {
         <div className="flex flex-wrap justify-center gap-8 md:gap-16 py-8">
           <div className="diamond-frame border-[4px] border-primary w-48 h-48 md:w-64 md:h-64 shadow-[0_0_15px_rgba(255,204,0,0.3)] bg-wood relative group animate-in zoom-in duration-700 delay-100 mt-12">
             <Image 
-              src="https://images.unsplash.com/photo-1606491956689-2ea866880c84?q=80&w=1200&auto=format&fit=crop" 
+              src="/images/jollof-rice.jpg" 
               alt="Jollof Rice" 
               fill
               className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -50,7 +50,7 @@ export default function HomePage() {
           
           <div className="diamond-frame border-[4px] border-primary w-56 h-56 md:w-72 md:h-72 shadow-[0_0_20px_rgba(255,204,0,0.5)] overflow-hidden relative group animate-in zoom-in duration-700 z-10">
             <Image 
-              src="https://images.pexels.com/photos/35490114/pexels-photo-35490114.jpeg?q=80&w=1200&auto=format&fit=crop" 
+              src="/images/egusi-soup.jpg" 
               alt="Egusi Soup" 
               fill
               className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -59,7 +59,7 @@ export default function HomePage() {
 
           <div className="diamond-frame border-[4px] border-primary w-48 h-48 md:w-64 md:h-64 shadow-[0_0_15px_rgba(255,204,0,0.3)] bg-wood relative group animate-in zoom-in duration-700 delay-200 mt-12">
             <Image 
-              src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?q=80&w=1200&auto=format&fit=crop" 
+              src="/images/stewed-chicken.jpg" 
               alt="Peppered Chicken" 
               fill
               className="object-cover group-hover:scale-110 transition-transform duration-500"
