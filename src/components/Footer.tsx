@@ -33,7 +33,7 @@ export function Footer() {
             </li>
             <li className="flex items-center space-x-3">
               <MapPin className="text-primary" size={20} />
-              <span>Baldock, UK (SG7)</span>
+              <span>Baldock, UK (Nationwide Delivery)</span>
             </li>
           </ul>
         </div>

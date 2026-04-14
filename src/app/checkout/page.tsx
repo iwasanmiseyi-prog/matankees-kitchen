@@ -18,12 +18,9 @@ export default function CheckoutPage() {
     e.preventDefault();
     if (items.length === 0) return;
 
-    if (method === "delivery") {
-      const isSG7 = address.toUpperCase().includes("SG7");
-      if (!isSG7) {
-        setError("Delivery is currently restricted to Baldock & surrounding SG7 postcodes.");
-        return;
-      }
+    if (method === "delivery" && !address.trim()) {
+      setError("Please enter a valid UK delivery address.");
+      return;
     }
     
     setError("");
@@ -107,7 +104,7 @@ export default function CheckoutPage() {
                 }`}
               >
                 <Truck size={32} />
-                <span className="font-bold">Delivery (SG7 Only)</span>
+                <span className="font-bold">UK Nationwide Delivery</span>
               </button>
             </div>
           </section>
@@ -121,7 +118,7 @@ export default function CheckoutPage() {
               {method === "delivery" && (
                 <div className="space-y-2">
                   <label htmlFor="address" className="block text-sm font-medium text-white">
-                    Delivery Address (Must include SG7 postcode)
+                    Delivery Address (Full UK address with Postcode)
                   </label>
                   <textarea
                     id="address"
@@ -129,7 +126,7 @@ export default function CheckoutPage() {
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     className="w-full bg-wood-dark border border-wood-light rounded-lg p-3 text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none min-h-[100px]"
-                    placeholder="E.g., 123 High Street, Baldock, SG7 6BX"
+                    placeholder="E.g., 123 High Street, London, E1 6AN"
                   />
                   {error && <p className="text-destructive text-sm font-medium mt-2">{error}</p>}
                 </div>
@@ -138,6 +135,9 @@ export default function CheckoutPage() {
               <div className="bg-wood-dark p-4 rounded-lg border border-wood-light">
                 <p className="text-sm text-muted-foreground mb-2">
                   Payments are securely processed via Stripe. You will be redirected to complete your payment.
+                </p>
+                <p className="text-sm text-muted-foreground mb-4">
+                  We accept Debit/Credit Cards (via Stripe) and Bank Transfer.
                 </p>
                 <button
                   type="submit"
