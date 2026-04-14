@@ -78,7 +78,7 @@ export default function MenuPage() {
                 <div key={`${item.name}-${idx}`} className="bg-wood/40 backdrop-blur-sm border border-wood-light rounded-xl shadow-xl hover:shadow-[0_0_20px_rgba(255,204,0,0.15)] hover:border-primary/50 transition-all duration-300 flex flex-col items-center pt-0 mt-8 relative group">
                   
                   {/* Diamond Image Frame overlapping the top of the card */}
-                  <div className="absolute -top-16 md:-top-20 diamond-frame border-[4px] border-primary w-40 h-40 md:w-48 md:h-48 shadow-[0_0_15px_rgba(255,204,0,0.5)] bg-wood group-hover:-translate-y-2 transition-transform duration-500 z-10 flex-shrink-0">
+                  <div className="absolute -top-24 md:-top-32 lg:-top-36 diamond-frame border-[4px] border-primary w-48 h-48 md:w-64 md:h-64 lg:w-72 lg:h-72 shadow-[0_0_15px_rgba(255,204,0,0.5)] bg-wood group-hover:-translate-y-2 transition-transform duration-500 z-10 flex-shrink-0">
                     <Image 
                       src={item.image}
                       alt={item.name}
@@ -87,7 +87,7 @@ export default function MenuPage() {
                     />
                   </div>
                   
-                  <div className="px-6 pb-6 pt-28 md:pt-36 flex-grow flex flex-col w-full text-center">
+                  <div className="px-6 pb-6 pt-[10rem] md:pt-[11rem] lg:pt-[12.5rem] flex-grow flex flex-col w-full text-center">
                     <h3 className="text-2xl font-bold text-white mb-2">{item.name}</h3>
                     {item.note && (
                       <p className="text-sm text-primary italic mb-4">{item.note}</p>

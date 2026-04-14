@@ -38,8 +38,8 @@ export default function HomePage() {
         </div>
 
         {/* Featured Diamond Images */}
-        <div className="flex flex-wrap justify-center gap-8 md:gap-16 py-8">
-          <div className="diamond-frame border-[4px] border-primary w-48 h-48 md:w-64 md:h-64 shadow-[0_0_15px_rgba(255,204,0,0.3)] bg-wood relative group animate-in zoom-in duration-700 delay-100 mt-12">
+        <div className="flex flex-wrap items-center justify-center gap-6 md:gap-12 lg:gap-16 py-12">
+          <div className="diamond-frame border-[4px] border-primary w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 shadow-[0_0_15px_rgba(255,204,0,0.3)] bg-wood relative group animate-in zoom-in duration-700 delay-100 flex-shrink-0">
             <Image 
               src="/images/jollof-rice.jpg" 
               alt="Jollof Rice" 
@@ -48,7 +48,7 @@ export default function HomePage() {
             />
           </div>
           
-          <div className="diamond-frame border-[4px] border-primary w-56 h-56 md:w-72 md:h-72 shadow-[0_0_20px_rgba(255,204,0,0.5)] overflow-hidden relative group animate-in zoom-in duration-700 z-10">
+          <div className="diamond-frame border-[4px] border-primary w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 shadow-[0_0_25px_rgba(255,204,0,0.6)] overflow-hidden relative group animate-in zoom-in duration-700 z-10 flex-shrink-0">
             <Image 
               src="/images/egusi-soup.jpg" 
               alt="Egusi Soup" 
@@ -57,7 +57,7 @@ export default function HomePage() {
             />
           </div>
 
-          <div className="diamond-frame border-[4px] border-primary w-48 h-48 md:w-64 md:h-64 shadow-[0_0_15px_rgba(255,204,0,0.3)] bg-wood relative group animate-in zoom-in duration-700 delay-200 mt-12">
+          <div className="diamond-frame border-[4px] border-primary w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 shadow-[0_0_15px_rgba(255,204,0,0.3)] bg-wood relative group animate-in zoom-in duration-700 delay-200 flex-shrink-0">
             <Image 
               src="/images/stewed-chicken.jpg" 
               alt="Peppered Chicken" 
