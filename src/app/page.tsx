@@ -107,19 +107,19 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-white text-lg">
             <div className="flex flex-col items-center space-y-4 p-8 bg-wood-dark/80 rounded-xl border border-wood-light hover:border-primary/50 transition-colors shadow-lg">
               <CheckCircle className="text-primary w-12 h-12" />
-              <span className="font-medium">Freshly prepared meals</span>
+              <span className="font-medium">Freshly prepared daily with quality ingredients</span>
             </div>
             <div className="flex flex-col items-center space-y-4 p-8 bg-wood-dark/80 rounded-xl border border-wood-light hover:border-primary/50 transition-colors shadow-lg">
               <CheckCircle className="text-primary w-12 h-12" />
-              <span className="font-medium">Made with quality ingredients</span>
+              <span className="font-medium">Authentic home-style Nigerian recipes</span>
             </div>
             <div className="flex flex-col items-center space-y-4 p-8 bg-wood-dark/80 rounded-xl border border-wood-light hover:border-primary/50 transition-colors shadow-lg">
               <CheckCircle className="text-primary w-12 h-12" />
-              <span className="font-medium">Home-style cooking with rich flavour</span>
+              <span className="font-medium">Generous portions and rich flavours</span>
             </div>
             <div className="flex flex-col items-center space-y-4 p-8 bg-wood-dark/80 rounded-xl border border-wood-light hover:border-primary/50 transition-colors shadow-lg">
               <CheckCircle className="text-primary w-12 h-12" />
-              <span className="font-medium">Reliable and friendly service</span>
+              <span className="font-medium">Reliable delivery and friendly service</span>
             </div>
           </div>
         </div>
@@ -148,7 +148,9 @@ export default function HomePage() {
             <div className="bg-wood-dark/60 border border-wood-light rounded-xl p-6 hover:border-primary/30 transition-colors">
               <h3 className="text-xl font-bold text-white mb-3">What payment methods do you accept?</h3>
               <p className="text-muted-foreground leading-relaxed">
-                We accept Debit/Credit Cards (via Stripe) and Bank Transfer.
+                We accept Debit/Credit Cards (secure payment via Stripe) and Bank Transfer.
+                <br />
+                For bank transfer, please send proof of payment via WhatsApp.
               </p>
             </div>
           </div>

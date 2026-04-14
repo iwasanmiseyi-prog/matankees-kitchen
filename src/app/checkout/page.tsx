@@ -137,7 +137,9 @@ export default function CheckoutPage() {
                   Payments are securely processed via Stripe. You will be redirected to complete your payment.
                 </p>
                 <p className="text-sm text-muted-foreground mb-4">
-                  We accept Debit/Credit Cards (via Stripe) and Bank Transfer.
+                  We accept Debit/Credit Cards (secure payment via Stripe) and Bank Transfer.
+                  <br />
+                  For bank transfer, please send proof of payment via WhatsApp.
                 </p>
                 <button
                   type="submit"

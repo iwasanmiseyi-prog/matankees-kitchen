@@ -11,8 +11,16 @@ export default function MenuPage() {
   const [addedItem, setAddedItem] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null); // null means "All"
 
-  // Group items by category
-  const categories = Array.from(new Set(menuData.map(item => item.category)));
+  const menuSections: Array<{
+    id: string;
+    title: string;
+    sourceCategories: string[];
+  }> = [
+    { id: "rice", title: "🍚 Rice Dishes", sourceCategories: ["Rice"] },
+    { id: "soups", title: "🥘 Soups & Stews", sourceCategories: ["Stews & Soups"] },
+    { id: "proteins", title: "🍖 Proteins", sourceCategories: ["Protein"] },
+    { id: "snacks", title: "🥟 Small Chops / Snacks", sourceCategories: ["Snacks", "Sides"] },
+  ];
 
   const handleAddToCart = (item: any, size: string, price: number | boolean) => {
     addToCart({
@@ -27,8 +35,9 @@ export default function MenuPage() {
     setTimeout(() => setAddedItem(null), 2000);
   };
 
-  // Determine which categories to render based on the filter
-  const displayedCategories = selectedCategory ? [selectedCategory] : categories;
+  const displayedSections = selectedCategory
+    ? menuSections.filter((s) => s.id === selectedCategory)
+    : menuSections;
 
   return (
     <div className="container mx-auto px-4 py-16 text-white" id="menu">
@@ -51,30 +60,32 @@ export default function MenuPage() {
         >
           All
         </button>
-        {categories.map((cat) => (
+        {menuSections.map((section) => (
           <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
+            key={section.id}
+            onClick={() => setSelectedCategory(section.id)}
             className={`px-6 py-2 rounded-full font-bold text-sm md:text-base border-2 transition-all ${
-              selectedCategory === cat
+              selectedCategory === section.id
                 ? "bg-primary text-wood-dark border-primary shadow-[0_0_15px_rgba(255,204,0,0.4)]"
                 : "bg-transparent text-white border-wood-light hover:border-primary hover:text-primary"
             }`}
           >
-            {cat}
+            {section.title}
           </button>
         ))}
       </div>
 
       <div className="space-y-20">
-        {displayedCategories.map((category, catIdx) => (
-          <section key={category} className="space-y-10 animate-in fade-in duration-1000" style={{ animationDelay: `${catIdx * 100}ms` }}>
-            <h2 className="text-3xl font-bold border-b-2 border-primary pb-4 flex items-center space-x-4">
-              <span className="text-primary">{category}</span>
+        {displayedSections.map((section, catIdx) => (
+          <section key={section.id} className="space-y-10 animate-in fade-in duration-1000" style={{ animationDelay: `${catIdx * 100}ms` }}>
+            <h2 className="text-4xl md:text-5xl font-black pb-4 flex items-center space-x-4 border-b-2 border-primary/80">
+              <span className="text-primary drop-shadow-[0_2px_2px_rgba(0,0,0,0.35)]">{section.title}</span>
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 pt-8">
-              {menuData.filter(item => item.category === category).map((item, idx) => (
+              {menuData
+                .filter((item) => section.sourceCategories.includes(item.category))
+                .map((item, idx) => (
                 <div key={`${item.name}-${idx}`} className="bg-wood/40 backdrop-blur-sm border border-wood-light rounded-xl shadow-xl hover:shadow-[0_0_20px_rgba(255,204,0,0.15)] hover:border-primary/50 transition-all duration-300 flex flex-col items-center pt-0 mt-6 relative group">
                   
                   {/* Diamond Image Frame overlapping the top of the card */}
