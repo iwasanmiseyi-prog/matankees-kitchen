@@ -86,11 +86,10 @@ export default function MenuPage() {
               {menuData
                 .filter((item) => section.sourceCategories.includes(item.category))
                 .map((item, idx) => (
-                <div key={`${item.name}-${idx}`} className="bg-wood/40 backdrop-blur-sm border border-wood-light rounded-xl shadow-xl hover:shadow-[0_0_20px_rgba(255,204,0,0.15)] hover:border-primary/50 transition-all duration-300 flex flex-col items-center pt-0 mt-6 relative group">
-                  
-                  {/* Diamond Image Frame overlapping the top of the card */}
-                  <div className="absolute -top-28 md:-top-36 lg:-top-40 diamond-frame border-[4px] border-primary w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 shadow-[0_0_18px_rgba(255,204,0,0.55)] bg-wood group-hover:-translate-y-2 transition-transform duration-500 z-10 flex-shrink-0">
-                    <Image 
+                <div key={`${item.name}-${idx}`} className="bg-wood/40 backdrop-blur-sm border border-wood-light rounded-xl shadow-xl hover:shadow-[0_0_20px_rgba(255,204,0,0.15)] hover:border-primary/50 transition-all duration-300 flex flex-col items-center pt-6 mt-6 relative group">
+                  {/* Diamond Image Frame (inside the card) */}
+                  <div className="diamond-frame border-[4px] border-primary w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 shadow-[0_0_18px_rgba(255,204,0,0.55)] bg-wood relative group-hover:-translate-y-1 transition-transform duration-500 z-10 flex-shrink-0">
+                    <Image
                       src={item.image}
                       alt={item.name}
                       fill
@@ -98,7 +97,7 @@ export default function MenuPage() {
                     />
                   </div>
                   
-                  <div className="px-6 pb-6 pt-[10.75rem] md:pt-[13.25rem] lg:pt-[14.75rem] flex-grow flex flex-col w-full text-center">
+                  <div className="px-6 pb-6 pt-4 flex-grow flex flex-col w-full text-center">
                     <h3 className="text-2xl font-bold text-white mb-0.5 leading-tight">{item.name}</h3>
                     {item.note && (
                       <p className="text-sm text-primary italic mb-2">{item.note}</p>
