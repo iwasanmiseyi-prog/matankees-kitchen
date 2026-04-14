@@ -98,10 +98,10 @@ export default function MenuPage() {
                     />
                   </div>
                   
-                  <div className="px-6 pb-6 pt-[11.5rem] md:pt-[14rem] lg:pt-[15.5rem] flex-grow flex flex-col w-full text-center">
-                    <h3 className="text-2xl font-bold text-white mb-1">{item.name}</h3>
+                  <div className="px-6 pb-6 pt-[10.75rem] md:pt-[13.25rem] lg:pt-[14.75rem] flex-grow flex flex-col w-full text-center">
+                    <h3 className="text-2xl font-bold text-white mb-0.5 leading-tight">{item.name}</h3>
                     {item.note && (
-                      <p className="text-sm text-primary italic mb-3">{item.note}</p>
+                      <p className="text-sm text-primary italic mb-2">{item.note}</p>
                     )}
                     
                     <div className="mt-auto space-y-3 w-full text-left">

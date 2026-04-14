@@ -11,7 +11,7 @@ export interface MenuItem {
 }
 
 export const menuData: MenuItem[] = [
-  {"category":"Rice","name":"Jollof Rice","prices":{"5L":35,"7L":50,"10L":65,"12L":75}, "image":"/images/jollof-rice.jpg"},
+  {"category":"Rice","name":"Jollof Rice","prices":{"5L":35,"7L":50,"10L":65,"12L":75}, "image":"/images/jollof-rice.jpeg"},
   {"category":"Rice","name":"Fried Rice","prices":{"5L":40,"7L":55,"10L":70,"12L":85}, "image":"/images/fried-rice.jpg"},
   {"category":"Rice","name":"Ofada Rice","prices":{"on_order":true}, "image":"/images/ofada-rice.jpg"},
   
@@ -30,7 +30,7 @@ export const menuData: MenuItem[] = [
   {"category":"Stews & Soups","name":"Edikaekong (Waterleaf & ugu)","prices":{"5L":60,"7L":95,"10L":130,"12L":165}, "image":"/images/edikaekong.jpg"},
   {"category":"Stews & Soups","name":"Efo Riro (Vegetable soup)","prices":{"650ml":45,"2L":55,"3L":90,"5L":125,"7L":160}, "image":"/images/efo-riro.jpg"},
   {"category":"Stews & Soups","name":"Ila Alasepo (Okra Soup)","prices":{"5L":55,"7L":85,"10L":115,"12L":145}, "image":"/images/ila-alasepo.jpg"},
-  {"category":"Stews & Soups","name":"Egusi","prices":{"5L":60,"7L":90,"10L":120,"12L":150}, "image":"/images/egusi-soup.jpg"},
+  {"category":"Stews & Soups","name":"Egusi","prices":{"5L":60,"7L":90,"10L":120,"12L":150}, "image":"/images/egusi-soup.jpeg"},
   {"category":"Stews & Soups","name":"Bitterleaf Soup","prices":{"5L":60,"7L":90,"10L":120,"12L":150,"extra":180}, "image":"/images/bitterleaf-soup.jpg"},
   {"category":"Stews & Soups","name":"Afang Soup","prices":{"5L":60,"7L":95,"10L":130,"12L":165,"extra":200}, "image":"/images/afang-soup.jpg"},
   {"category":"Stews & Soups","name":"Gbegiri","prices":{"5L":50,"7L":75,"10L":100,"12L":125}, "image":"/images/gbegiri.jpg"},

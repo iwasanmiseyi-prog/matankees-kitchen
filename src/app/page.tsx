@@ -41,7 +41,7 @@ export default function HomePage() {
         <div className="flex flex-wrap items-center justify-center gap-6 md:gap-12 lg:gap-16 py-12">
           <div className="diamond-frame border-[4px] border-primary w-72 h-72 md:w-96 md:h-96 lg:w-[28rem] lg:h-[28rem] shadow-[0_0_18px_rgba(255,204,0,0.35)] bg-wood relative group animate-in zoom-in duration-700 delay-100 flex-shrink-0">
             <Image 
-              src="/images/jollof-rice.jpg" 
+              src="/images/jollof-rice.jpeg" 
               alt="Jollof Rice" 
               fill
               className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -50,7 +50,7 @@ export default function HomePage() {
           
           <div className="diamond-frame border-[4px] border-primary w-80 h-80 md:w-[28rem] md:h-[28rem] lg:w-[34rem] lg:h-[34rem] shadow-[0_0_28px_rgba(255,204,0,0.65)] overflow-hidden relative group animate-in zoom-in duration-700 z-10 flex-shrink-0">
             <Image 
-              src="/images/egusi-soup.jpg" 
+              src="/images/egusi-soup.jpeg" 
               alt="Egusi Soup" 
               fill
               className="object-cover group-hover:scale-110 transition-transform duration-500"
