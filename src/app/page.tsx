@@ -23,7 +23,7 @@ export default function HomePage() {
       {
         id: "pay",
         q: "What payment methods do you accept?",
-        a: "We accept Debit/Credit Cards (secure payment via Stripe) and Bank Transfer. For bank transfer, please send proof of payment via WhatsApp.\n\nWe also accept bank transfer:\nCurrency: British Pound (£)\nBeneficiary: Mercy Oyelowo\nSort Code: 04-00-75\nAccount Number: 91187559\nBank: Revolut Ltd\nAddress: 30 South Colonnade, E14 5HX, London, United Kingdom\nAfter payment, please send proof via WhatsApp to 07466 705927",
+        a: "We accept Debit/Credit Cards (secure online payment) and Bank Transfer. For bank transfer, please send proof of payment via WhatsApp.\n\nWe also accept bank transfer:\nCurrency: British Pound (£)\nBeneficiary: Mercy Oyelowo\nSort Code: 04-00-75\nAccount Number: 91187559\nBank: Revolut Ltd\nAddress: 30 South Colonnade, E14 5HX, London, United Kingdom\nAfter payment, please send proof via WhatsApp to 07466 705927",
       },
       {
         id: "catering",

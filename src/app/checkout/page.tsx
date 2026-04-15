@@ -36,7 +36,7 @@ export default function CheckoutPage() {
 
       if (response.ok) {
         const { url } = await response.json();
-        // Redirect to Stripe Checkout or internal success page
+        // Redirect to hosted checkout or internal success page
         if (url) {
            window.location.href = url;
         } else {
@@ -134,10 +134,10 @@ export default function CheckoutPage() {
               
               <div className="bg-wood-dark p-4 rounded-lg border border-wood-light">
                 <p className="text-sm text-muted-foreground mb-2">
-                  Payments are securely processed via Stripe. You will be redirected to complete your payment.
+                  Payments are securely processed online. You will be redirected to complete your payment.
                 </p>
                 <p className="text-sm text-muted-foreground mb-4">
-                  We accept Debit/Credit Cards (secure payment via Stripe) and Bank Transfer.
+                  We accept Debit/Credit Cards (secure online payment) and Bank Transfer.
                   <br />
                   For bank transfer, please send proof of payment via WhatsApp.
                 </p>
