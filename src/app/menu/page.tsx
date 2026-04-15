@@ -16,11 +16,33 @@ export default function MenuPage() {
     title: string;
     sourceCategories: string[];
   }> = [
-    { id: "rice", title: "🍚 Rice Dishes", sourceCategories: ["Rice"] },
-    { id: "soups", title: "🥘 Soups & Stews", sourceCategories: ["Stews & Soups"] },
-    { id: "proteins", title: "🍖 Proteins", sourceCategories: ["Protein"] },
-    { id: "snacks", title: "🥟 Small Chops / Snacks", sourceCategories: ["Snacks", "Sides"] },
+    { id: "rice", title: "🍚 Rice Dishes", sourceCategories: ["Rice Dishes"] },
+    { id: "soups", title: "🥘 Soups & Stews", sourceCategories: ["Soups & Stews"] },
+    { id: "proteins", title: "🍖 Proteins", sourceCategories: ["Proteins"] },
+    { id: "pastries", title: "🥟 Pastries", sourceCategories: ["Pastries"] },
+    { id: "other", title: "🍽️ Other Meals", sourceCategories: ["Other Meals"] },
   ];
+
+  const getDisplayPrices = (prices: Record<string, number | boolean>) => {
+    if (prices.on_order) return [["on_order", true]] as Array<[string, number | boolean]>;
+
+    const litreKeys = Object.keys(prices).filter((k) => /^\d+L$/.test(k));
+    if (litreKeys.length === 0) return Object.entries(prices);
+
+    const toNum = (k: string) => Number(k.replace("L", ""));
+    const baseKey = litreKeys.sort((a, b) => toNum(a) - toNum(b))[0];
+    const baseLitres = toNum(baseKey);
+    const basePrice = prices[baseKey];
+
+    if (typeof basePrice !== "number" || baseLitres <= 0) return Object.entries(prices);
+
+    const perL = basePrice / baseLitres;
+    const target = [2, 4, 6].map((l) => {
+      const val = Math.round(perL * l);
+      return [`${l}L`, val] as [string, number];
+    });
+    return target;
+  };
 
   const handleAddToCart = (item: any, size: string, price: number | boolean) => {
     addToCart({
@@ -104,7 +126,7 @@ export default function MenuPage() {
                     )}
                     
                     <div className="mt-auto space-y-3 w-full text-left">
-                      {Object.entries(item.prices).map(([size, price]) => (
+                      {getDisplayPrices(item.prices).map(([size, price]) => (
                         <div key={size} className="flex items-center justify-between bg-wood-dark/80 p-3 rounded-lg border border-wood-light group/row hover:border-primary/40 transition-colors">
                           <div className="flex flex-col">
                             <span className="font-medium text-white/90">

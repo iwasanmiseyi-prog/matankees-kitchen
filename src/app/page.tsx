@@ -1,9 +1,37 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Star, CheckCircle, Info } from "lucide-react";
+import { ArrowRight, Star, CheckCircle, ChevronDown, ChevronUp, Info } from "lucide-react";
 
 export default function HomePage() {
+  const [openFaq, setOpenFaq] = useState<string | null>(null);
+
+  const faqs = useMemo(
+    () => [
+      {
+        id: "delivery",
+        q: "How does delivery work?",
+        a: "We offer pickup in Baldock and doorstep delivery across the UK with a delivery fee. Delivery radius and cost calculated at checkout or via WhatsApp.",
+      },
+      {
+        id: "min",
+        q: "Is there a minimum order?",
+        a: "There is no strict minimum order for our regular menu items! However, please note that some specialized items have custom minimum batch sizes, and a few select items require 24-48 hours notice.",
+      },
+      {
+        id: "pay",
+        q: "What payment methods do you accept?",
+        a: "We accept Debit/Credit Cards (secure payment via Stripe) and Bank Transfer. For bank transfer, please send proof of payment via WhatsApp.\n\nWe also accept bank transfer:\nCurrency: British Pound (£)\nBeneficiary: Mercy Oyelowo\nSort Code: 04-00-75\nAccount Number: 91187559\nBank: Revolut Ltd\nAddress: 30 South Colonnade, E14 5HX, London, United Kingdom\nAfter payment, please send proof via WhatsApp to 07466 705927",
+      },
+      {
+        id: "catering",
+        q: "Do you offer catering?",
+        a: "Yes, we provide catering services for events, parties, and corporate lunches. Please contact us via WhatsApp for details and pricing.",
+      },
+    ],
+    []
+  );
+
   return (
     <div className="relative flex flex-col items-center justify-center overflow-hidden">
       {/* Background with Bokeh Effect */}
@@ -22,7 +50,7 @@ export default function HomePage() {
         {/* Delivery Info Banner */}
         <div className="bg-primary/20 border border-primary text-white px-6 py-3 rounded-full flex items-center space-x-3 text-sm md:text-base animate-in slide-in-from-top-4 duration-700 backdrop-blur-sm shadow-[0_0_15px_rgba(255,204,0,0.1)]">
           <Info className="text-primary w-5 h-5 flex-shrink-0" />
-          <span><strong className="text-primary">Delivery & Pickup available.</strong> Doorstep delivery with fee – same-day orders welcome.</span>
+          <span><strong className="text-primary">Delivery & Pickup available.</strong> Doorstep delivery with fee.</span>
         </div>
 
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-1000 pt-8">
@@ -78,6 +106,9 @@ export default function HomePage() {
             Order on WhatsApp 📲
           </a>
           <p className="text-primary font-bold mt-6 text-lg">Order early to avoid missing out ⏳</p>
+          <p className="text-white/90 mt-3 text-base md:text-lg px-4">
+            We also offer catering services for events, parties, and corporate lunches.
+          </p>
           
           <div className="flex items-center justify-center mt-8 space-x-2 text-white">
             <Star className="text-primary fill-primary" size={20} />
@@ -85,7 +116,7 @@ export default function HomePage() {
             <Star className="text-primary fill-primary" size={20} />
             <Star className="text-primary fill-primary" size={20} />
             <Star className="text-primary fill-primary" size={20} />
-            <span className="ml-2 font-medium">Authentic Nigerian Cuisine</span>
+            <span className="ml-2 font-medium">Authentic West African cuisine</span>
           </div>
         </div>
       </div>
@@ -107,7 +138,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-white text-lg">
             <div className="flex flex-col items-center space-y-4 p-8 bg-wood-dark/80 rounded-xl border border-wood-light hover:border-primary/50 transition-colors shadow-lg">
               <CheckCircle className="text-primary w-12 h-12" />
-              <span className="font-medium">Freshly prepared daily with quality ingredients</span>
+              <span className="font-medium">Freshly prepared with quality ingredients</span>
             </div>
             <div className="flex flex-col items-center space-y-4 p-8 bg-wood-dark/80 rounded-xl border border-wood-light hover:border-primary/50 transition-colors shadow-lg">
               <CheckCircle className="text-primary w-12 h-12" />
@@ -130,29 +161,36 @@ export default function HomePage() {
         <div className="container mx-auto px-4 max-w-4xl">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-primary mb-12">Frequently Asked Questions</h2>
           
-          <div className="space-y-6">
-            <div className="bg-wood-dark/60 border border-wood-light rounded-xl p-6 hover:border-primary/30 transition-colors">
-              <h3 className="text-xl font-bold text-white mb-3">How does delivery work?</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                We offer pickup in Baldock and doorstep delivery across the UK with a delivery fee. Delivery radius and cost calculated at checkout or via WhatsApp. Same-day orders welcome!
-              </p>
-            </div>
-            
-            <div className="bg-wood-dark/60 border border-wood-light rounded-xl p-6 hover:border-primary/30 transition-colors">
-              <h3 className="text-xl font-bold text-white mb-3">Is there a minimum order?</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                There is no strict minimum order for our regular menu items! However, please note that some specialized snacks (like Akara or Meatpies) have custom minimum batch sizes, and a few select items require 24-48 hours notice.
-              </p>
-            </div>
-            
-            <div className="bg-wood-dark/60 border border-wood-light rounded-xl p-6 hover:border-primary/30 transition-colors">
-              <h3 className="text-xl font-bold text-white mb-3">What payment methods do you accept?</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                We accept Debit/Credit Cards (secure payment via Stripe) and Bank Transfer.
-                <br />
-                For bank transfer, please send proof of payment via WhatsApp.
-              </p>
-            </div>
+          <div className="space-y-4">
+            {faqs.map((f) => {
+              const isOpen = openFaq === f.id;
+              return (
+                <div key={f.id} className="bg-wood-dark/60 border border-wood-light rounded-xl hover:border-primary/30 transition-colors overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : f.id)}
+                    className="w-full px-6 py-5 flex items-center justify-between text-left"
+                    aria-expanded={isOpen}
+                  >
+                    <span className="text-lg md:text-xl font-bold text-white">{f.q}</span>
+                    {isOpen ? (
+                      <ChevronUp className="text-primary w-5 h-5 flex-shrink-0" />
+                    ) : (
+                      <ChevronDown className="text-primary w-5 h-5 flex-shrink-0" />
+                    )}
+                  </button>
+                  {isOpen && (
+                    <div className="px-6 pb-6 -mt-1">
+                      {f.a.split("\n").map((line, idx) => (
+                        <p key={idx} className="text-muted-foreground leading-relaxed">
+                          {line || "\u00A0"}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

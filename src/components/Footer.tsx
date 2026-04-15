@@ -5,7 +5,7 @@ import { Instagram, MapPin, Phone, Mail } from "lucide-react";
 export function Footer() {
   return (
     <footer className="bg-wood-dark text-foreground py-10 mt-20 border-t border-wood-light">
-      <div className="container mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="container mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
           <h3 className="text-xl font-bold text-primary mb-4">MATANKEES Kitchen</h3>
           <p className="italic text-muted-foreground mb-4">"Flavour That Feels Like Home"</p>
@@ -35,16 +35,6 @@ export function Footer() {
               <MapPin className="text-primary" size={20} />
               <span>Baldock, UK (Nationwide Delivery)</span>
             </li>
-          </ul>
-        </div>
-
-        <div>
-          <h3 className="text-xl font-bold text-primary mb-4">Hours</h3>
-          <ul className="space-y-2 text-muted-foreground">
-            <li>Delivery & Pickup available</li>
-            <li>Monday - Friday: 11am - 9pm</li>
-            <li>Saturday: 12pm - 10pm</li>
-            <li>Sunday: 12pm - 8pm</li>
           </ul>
         </div>
       </div>

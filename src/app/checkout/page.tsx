@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import { useCart } from "@/components/CartProvider";
-import { Trash2, ShoppingBag, MapPin, Truck } from "lucide-react";
+import { Trash2, ShoppingBag, MapPin, Truck, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
-  const { items, removeFromCart, totalPrice, totalItems } = useCart();
+  const { items, removeFromCart, incrementItem, decrementItem, totalPrice, totalItems } = useCart();
   const [method, setMethod] = useState<"pickup" | "delivery">("pickup");
   const [address, setAddress] = useState("");
   const [error, setError] = useState("");
@@ -141,6 +141,18 @@ export default function CheckoutPage() {
                   <br />
                   For bank transfer, please send proof of payment via WhatsApp.
                 </p>
+                <div className="text-sm text-white/90 bg-wood/40 border border-wood-light rounded-lg p-4 mb-4">
+                  <p className="font-bold text-primary mb-2">We also accept bank transfer:</p>
+                  <div className="space-y-1 text-muted-foreground">
+                    <p><span className="text-white/80">Currency:</span> British Pound (£)</p>
+                    <p><span className="text-white/80">Beneficiary:</span> Mercy Oyelowo</p>
+                    <p><span className="text-white/80">Sort Code:</span> 04-00-75</p>
+                    <p><span className="text-white/80">Account Number:</span> 91187559</p>
+                    <p><span className="text-white/80">Bank:</span> Revolut Ltd</p>
+                    <p><span className="text-white/80">Address:</span> 30 South Colonnade, E14 5HX, London, United Kingdom</p>
+                    <p className="pt-2"><span className="text-white/80">After payment:</span> please send proof via WhatsApp to 07466 705927</p>
+                  </div>
+                </div>
                 <button
                   type="submit"
                   disabled={loading}
@@ -165,7 +177,28 @@ export default function CheckoutPage() {
                 <div key={item.id} className="flex justify-between items-start pb-4 border-b border-wood-light/50 last:border-0 last:pb-0">
                   <div className="flex-1">
                     <h3 className="text-white font-medium">{item.name}</h3>
-                    <p className="text-sm text-primary">{item.size} x {item.quantity}</p>
+                    <p className="text-sm text-primary">{item.size}</p>
+                    <div className="mt-2 inline-flex items-center rounded-lg border border-wood-light bg-wood-dark/60">
+                      <button
+                        type="button"
+                        onClick={() => decrementItem(item.id)}
+                        className="p-2 text-white hover:text-primary transition-colors"
+                        aria-label={`Decrease quantity of ${item.name}`}
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <span className="px-3 py-1 text-white font-bold min-w-[2rem] text-center">
+                        {item.quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => incrementItem(item.id)}
+                        className="p-2 text-white hover:text-primary transition-colors"
+                        aria-label={`Increase quantity of ${item.name}`}
+                      >
+                        <Plus size={16} />
+                      </button>
+                    </div>
                   </div>
                   <div className="flex flex-col items-end pl-4">
                     <span className="text-white font-bold mb-2">
