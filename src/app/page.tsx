@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useMemo, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Star, CheckCircle, ChevronDown, ChevronUp, Info } from "lucide-react";
+import { Star, CheckCircle, ChevronDown, ChevronUp, Info } from "lucide-react";
 
 export default function HomePage() {
   const [openFaq, setOpenFaq] = useState<string | null>(null);
@@ -23,7 +22,7 @@ export default function HomePage() {
       {
         id: "pay",
         q: "What payment methods do you accept?",
-        a: "We accept Debit/Credit Cards (secure online payment) and Bank Transfer. For bank transfer, please send proof of payment via WhatsApp.\n\nWe also accept bank transfer:\nCurrency: British Pound (£)\nBeneficiary: Mercy Oyelowo\nSort Code: 04-00-75\nAccount Number: 91187559\nBank: Revolut Ltd\nAddress: 30 South Colonnade, E14 5HX, London, United Kingdom\nAfter payment, please send proof via WhatsApp to 07466 705927",
+        a: "We accept Debit/Credit Cards for secure online payment at checkout.",
       },
       {
         id: "catering",
@@ -155,6 +154,30 @@ export default function HomePage() {
               <span className="font-medium">Reliable delivery and friendly service</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Home Cooking Services */}
+      <div className="z-10 w-full bg-wood-dark/90 border-t border-primary/20 py-20 relative">
+        <div className="container mx-auto px-4 max-w-4xl text-center space-y-6">
+          <h2 className="text-3xl md:text-5xl font-black text-primary">Home Cooking Services Available 🍲✨</h2>
+          <p className="text-lg md:text-xl text-white/90 leading-relaxed">
+            Looking for help with your home cooking?
+            <br />
+            We prepare fresh, delicious meals right in your kitchen — just the way you like it.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-white text-base md:text-lg">
+            <div className="bg-wood/40 border border-wood-light rounded-xl p-5">✔ Weekend cooking</div>
+            <div className="bg-wood/40 border border-wood-light rounded-xl p-5">✔ Custom meals</div>
+            <div className="bg-wood/40 border border-wood-light rounded-xl p-5">✔ Stress-free service</div>
+          </div>
+          <div className="text-white/90 text-lg md:text-xl space-y-2">
+            <p>📞 07466 705 927</p>
+            <p>📱 @matankees</p>
+          </div>
+          <p className="text-white/90 text-lg md:text-xl leading-relaxed">
+            You provide the ingredients, we do the cooking and provide the flavour 💛
+          </p>
         </div>
       </div>
 

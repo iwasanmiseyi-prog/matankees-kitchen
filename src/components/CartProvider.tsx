@@ -7,6 +7,7 @@ export interface CartItem {
   name: string;
   size: string;
   price: number | "on request";
+  image: string;
   quantity: number;
 }
 

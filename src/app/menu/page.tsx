@@ -24,24 +24,12 @@ export default function MenuPage() {
   ];
 
   const getDisplayPrices = (prices: Record<string, number | boolean>) => {
-    if (prices.on_order) return [["on_order", true]] as Array<[string, number | boolean]>;
+    if (prices.on_order) return [] as Array<[string, number | boolean]>;
 
-    const litreKeys = Object.keys(prices).filter((k) => /^\d+L$/.test(k));
-    if (litreKeys.length === 0) return Object.entries(prices);
-
-    const toNum = (k: string) => Number(k.replace("L", ""));
-    const baseKey = litreKeys.sort((a, b) => toNum(a) - toNum(b))[0];
-    const baseLitres = toNum(baseKey);
-    const basePrice = prices[baseKey];
-
-    if (typeof basePrice !== "number" || baseLitres <= 0) return Object.entries(prices);
-
-    const perL = basePrice / baseLitres;
-    const target = [2, 4, 6].map((l) => {
-      const val = Math.round(perL * l);
-      return [`${l}L`, val] as [string, number];
-    });
-    return target;
+    const allowed = ["2L", "4L", "6L"] as const;
+    return allowed
+      .map((k) => [k, prices[k]] as [string, number | boolean])
+      .filter(([, p]) => typeof p === "number");
   };
 
   const handleAddToCart = (item: any, size: string, price: number | boolean) => {
@@ -50,6 +38,7 @@ export default function MenuPage() {
       name: item.name,
       size: size === "each" ? "Per Item" : size,
       price: typeof price === "number" ? price : "on request",
+      image: item.image,
       quantity: 1,
     });
     
@@ -126,30 +115,48 @@ export default function MenuPage() {
                     )}
                     
                     <div className="mt-auto space-y-3 w-full text-left">
-                      {getDisplayPrices(item.prices).map(([size, price]) => (
-                        <div key={size} className="flex items-center justify-between bg-wood-dark/80 p-3 rounded-lg border border-wood-light group/row hover:border-primary/40 transition-colors">
-                          <div className="flex flex-col">
-                            <span className="font-medium text-white/90">
-                              {size === "on_order" ? "Available on Order" : size.replace(/_/g, ' ')}
-                            </span>
-                            <span className="text-primary font-bold text-lg">
-                              {typeof price === "number" ? `£${price.toFixed(2)}` : "Price on Request"}
-                            </span>
-                          </div>
-                          
-                          <button 
-                            onClick={() => handleAddToCart(item, size, price)}
-                            className="bg-wood-dark border-2 border-primary text-primary hover:bg-primary hover:text-wood-dark p-2 rounded-full transition-all flex-shrink-0 shadow-[0_0_10px_rgba(255,204,0,0.2)] hover:shadow-[0_0_15px_rgba(255,204,0,0.6)]"
-                            aria-label={`Add ${item.name} (${size}) to cart`}
+                      {item.prices.on_order ? (
+                        <div className="bg-wood-dark/80 p-4 rounded-lg border border-wood-light text-center">
+                          <p className="text-white font-semibold">Available on order</p>
+                          <p className="text-sm text-muted-foreground mt-2">
+                            Please message us on WhatsApp for 2L / 4L / 6L portions and pricing.
+                          </p>
+                          <a
+                            href="https://wa.me/447466705927"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex mt-4 bg-primary text-wood-dark px-6 py-2 rounded-full font-bold hover:bg-golden-hover transition-colors"
                           >
-                            {addedItem === `${item.name}-${size}` ? (
-                              <Check className="w-5 h-5 text-green-400" />
-                            ) : (
-                              <Plus className="w-5 h-5" />
-                            )}
-                          </button>
+                            WhatsApp us
+                          </a>
                         </div>
-                      ))}
+                      ) : (
+                        getDisplayPrices(item.prices).map(([size, price]) => (
+                          <div
+                            key={size}
+                            className="flex items-center justify-between bg-wood-dark/80 p-3 rounded-lg border border-wood-light group/row hover:border-primary/40 transition-colors"
+                          >
+                            <div className="flex flex-col">
+                              <span className="font-medium text-white/90">{size.replace(/_/g, " ")}</span>
+                              <span className="text-primary font-bold text-lg">
+                                {typeof price === "number" ? `£${price.toFixed(2)}` : "Price on Request"}
+                              </span>
+                            </div>
+
+                            <button
+                              onClick={() => handleAddToCart(item, size, price)}
+                              className="bg-wood-dark border-2 border-primary text-primary hover:bg-primary hover:text-wood-dark p-2 rounded-full transition-all flex-shrink-0 shadow-[0_0_10px_rgba(255,204,0,0.2)] hover:shadow-[0_0_15px_rgba(255,204,0,0.6)]"
+                              aria-label={`Add ${item.name} (${size}) to cart`}
+                            >
+                              {addedItem === `${item.name}-${size}` ? (
+                                <Check className="w-5 h-5 text-green-400" />
+                              ) : (
+                                <Plus className="w-5 h-5" />
+                              )}
+                            </button>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </div>
                 </div>
