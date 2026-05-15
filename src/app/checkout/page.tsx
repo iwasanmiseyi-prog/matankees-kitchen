@@ -1,111 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface CartItem {
-  name: string;
-  size: "2L" | "4L" | "6L";
-  quantity: number;
-  unitPrice: number;
-}
-
-// ─── useCart hook ─────────────────────────────────────────────────────────────
-// Reads from localStorage key "cart" (array of CartItem).
-// ✅ To integrate with your real store, replace this hook with your own:
-//    import { useCart } from "@/context/CartContext";
-//    or however your app exposes cart state.
-
-function useCart(): CartItem[] {
-  const [cart, setCart] = useState<CartItem[]>([]);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("cart");
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) setCart(parsed);
-      }
-    } catch {
-      console.warn("Could not read cart from localStorage");
-    }
-
-    // Keep in sync if another tab / component updates the cart
-    function onStorage(e: StorageEvent) {
-      if (e.key === "cart" && e.newValue) {
-        try {
-          const parsed = JSON.parse(e.newValue);
-          if (Array.isArray(parsed)) setCart(parsed);
-        } catch { /* ignore */ }
-      }
-    }
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
-
-  return cart;
-}
+import { useState } from "react";
+import { useCart } from "@/components/CartProvider";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function formatCurrency(amount: number) {
   return `£${amount.toFixed(2)}`;
-}
-
-function buildWhatsAppMessage(
-  cart: CartItem[],
-  form: FormState,
-  subtotal: number,
-  deliveryFee: number,
-  total: number
-): string {
-  // One line per cart item
-  const itemLines = cart
-    .map((item) => {
-      const lineTotal = formatCurrency(item.unitPrice * item.quantity);
-      return item.unitPrice > 0
-        ? `- ${item.name} - ${item.size} × ${item.quantity} = ${lineTotal}`
-        : `- ${item.name} - ${item.size} × ${item.quantity}`;
-    })
-    .join("\n");
-
-  const deliveryLine =
-    deliveryFee > 0
-      ? `Delivery: ${formatCurrency(deliveryFee)}`
-      : "Delivery: Free (Pickup)";
-
-  const fulfilmentLine =
-    form.deliveryType === "delivery"
-      ? `📍 Delivery to: ${form.address}`
-      : "📍 Collection / Pickup";
-
-  const customerLines = [
-    `👤 Name: ${form.firstName} ${form.lastName}`,
-    `📞 Phone: ${form.phone}`,
-    `📧 Email: ${form.email}`,
-    fulfilmentLine,
-    ...(form.instructions.trim()
-      ? [`📝 Special instructions: ${form.instructions.trim()}`]
-      : []),
-  ];
-
-  const lines = [
-    "Hi Clever Kitchen 👋",
-    "I would like to order:",
-    "",
-    itemLines,
-    "",
-    `Subtotal: ${formatCurrency(subtotal)}`,
-    deliveryLine,
-    `*Total: ${formatCurrency(total)}*`,
-    "",
-    ...customerLines,
-    "",
-    "Thank you! 🙏",
-  ];
-
-  return encodeURIComponent(lines.join("\n"));
 }
 
 // ─── Form state ───────────────────────────────────────────────────────────────
@@ -130,37 +31,81 @@ const EMPTY_FORM: FormState = {
   instructions: "",
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// ─── WhatsApp message builder ─────────────────────────────────────────────────
+// Uses the real CartItem fields from CartProvider:
+//   id, name, size, price (number | "on request"), image, quantity
+
+import type { CartItem } from "@/components/CartProvider";
+
+function buildWhatsAppMessage(
+  items: CartItem[],
+  form: FormState,
+  totalPrice: number,
+  deliveryFee: number
+): string {
+  const itemLines = items
+    .map((item) => {
+      if (typeof item.price === "number") {
+        const lineTotal = formatCurrency(item.price * item.quantity);
+        return `- ${item.name} - ${item.size} × ${item.quantity} = ${lineTotal}`;
+      }
+      // price === "on request"
+      return `- ${item.name} - ${item.size} × ${item.quantity} (price on request)`;
+    })
+    .join("\n");
+
+  const grandTotal = totalPrice + deliveryFee;
+
+  const lines = [
+    "Hi Clever Kitchen 👋",
+    "I would like to order:",
+    "",
+    itemLines,
+    "",
+    `Subtotal: ${formatCurrency(totalPrice)}`,
+    deliveryFee > 0
+      ? `Delivery: ${formatCurrency(deliveryFee)}`
+      : "Delivery: Free (Pickup)",
+    `*Total: ${formatCurrency(grandTotal)}*`,
+    "",
+    `👤 Name: ${form.firstName} ${form.lastName}`,
+    `📞 Phone: ${form.phone}`,
+    `📧 Email: ${form.email}`,
+    form.deliveryType === "delivery"
+      ? `📍 Delivery to: ${form.address}`
+      : "📍 Collection / Pickup",
+    ...(form.instructions.trim()
+      ? [`📝 Special instructions: ${form.instructions.trim()}`]
+      : []),
+    "",
+    "Thank you! 🙏",
+  ];
+
+  return encodeURIComponent(lines.join("\n"));
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function CheckoutPage() {
-  // ✅ Reads from localStorage["cart"] automatically.
-  // To use your own store instead, replace this line:
-  //   const { cart } = useCart();  ← your real hook
-  const cart = useCart();
+  // ✅ Real cart from CartProvider — reads items, incrementItem, decrementItem,
+  //    removeFromCart, totalPrice directly from context.
+  const { items, incrementItem, decrementItem, removeFromCart, totalPrice } = useCart();
+
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
-  const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>(
-    {}
-  );
+  const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
 
-  const subtotal = cart.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
   const deliveryFee = form.deliveryType === "delivery" ? 3.99 : 0;
-  const total = subtotal + deliveryFee;
+  const grandTotal = totalPrice + deliveryFee;
 
-  // ── Field helpers ──────────────────────────────────────────────────────────
-
-  function set(field: keyof FormState) {
-    return (
-      e: React.ChangeEvent<
-        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-      >
-    ) => {
-      setForm((prev) => ({ ...prev, [field]: e.target.value }));
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
+  // Field change helper
+  function field(key: keyof FormState) {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setForm((p) => ({ ...p, [key]: e.target.value }));
+      setErrors((p) => ({ ...p, [key]: undefined }));
     };
   }
 
-  // ── Validation ─────────────────────────────────────────────────────────────
-
+  // Validation
   function validate(): boolean {
     const next: typeof errors = {};
     if (!form.firstName.trim()) next.firstName = "Required";
@@ -174,39 +119,35 @@ export default function CheckoutPage() {
     return Object.keys(next).length === 0;
   }
 
-  // ── Submit ─────────────────────────────────────────────────────────────────
-
+  // Open WhatsApp
   function handleWhatsApp() {
     if (!validate()) return;
-    const msg = buildWhatsAppMessage(cart, form, subtotal, deliveryFee, total);
+    const msg = buildWhatsAppMessage(items, form, totalPrice, deliveryFee);
     window.open(`https://wa.me/447466705927?text=${msg}`, "_blank");
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────────
-
   return (
     <>
-      {/* ── Global styles injected inline so no external CSS is needed ── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;700&display=swap');
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-          --gold:       #D4A017;
-          --gold-light: #F0C040;
-          --gold-dark:  #A07810;
-          --wood:       #1A1008;
-          --wood-mid:   #2C1F0E;
-          --wood-light: #3D2B14;
-          --wood-border:#4E3820;
-          --cream:      #F5EDD8;
-          --cream-dim:  #C8B98A;
-          --text:       #F5EDD8;
-          --text-muted: #9E8B6A;
-          --error:      #E05252;
-          --radius:     10px;
-          --shadow:     0 8px 32px rgba(0,0,0,.55);
+          --gold:        #D4A017;
+          --gold-light:  #F0C040;
+          --gold-dark:   #A07810;
+          --wood:        #1A1008;
+          --wood-mid:    #2C1F0E;
+          --wood-light:  #3D2B14;
+          --wood-border: #4E3820;
+          --cream:       #F5EDD8;
+          --cream-dim:   #C8B98A;
+          --text:        #F5EDD8;
+          --text-muted:  #9E8B6A;
+          --error:       #E05252;
+          --radius:      10px;
+          --shadow:      0 8px 32px rgba(0,0,0,.55);
         }
 
         body {
@@ -217,38 +158,26 @@ export default function CheckoutPage() {
           min-height: 100vh;
         }
 
-        /* Wood-grain texture overlay via pseudo bg */
-        .ck-checkout-root {
+        .ck-root {
           min-height: 100vh;
           background:
-            repeating-linear-gradient(
-              92deg,
-              transparent 0px,
-              transparent 18px,
-              rgba(255,255,255,.012) 18px,
-              rgba(255,255,255,.012) 19px
-            ),
-            repeating-linear-gradient(
-              180deg,
-              transparent 0px,
-              transparent 40px,
-              rgba(0,0,0,.06) 40px,
-              rgba(0,0,0,.06) 41px
-            ),
+            repeating-linear-gradient(92deg,
+              transparent 0, transparent 18px,
+              rgba(255,255,255,.012) 18px, rgba(255,255,255,.012) 19px),
+            repeating-linear-gradient(180deg,
+              transparent 0, transparent 40px,
+              rgba(0,0,0,.06) 40px, rgba(0,0,0,.06) 41px),
             var(--wood);
         }
 
-        /* ── Layout ── */
-        .ck-wrapper {
-          max-width: 980px;
+        .ck-wrap {
+          max-width: 1000px;
           margin: 0 auto;
           padding: 40px 20px 80px;
         }
 
-        .ck-header {
-          text-align: center;
-          margin-bottom: 44px;
-        }
+        /* ── Header ── */
+        .ck-header { text-align: center; margin-bottom: 44px; }
         .ck-header h1 {
           font-family: 'Playfair Display', serif;
           font-size: clamp(1.8rem, 5vw, 2.8rem);
@@ -262,21 +191,19 @@ export default function CheckoutPage() {
           font-weight: 300;
         }
         .ck-divider {
-          width: 60px;
-          height: 2px;
+          width: 60px; height: 2px;
           background: linear-gradient(90deg, transparent, var(--gold), transparent);
           margin: 14px auto 0;
         }
 
+        /* ── Grid ── */
         .ck-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 28px;
           align-items: start;
         }
-        @media (max-width: 680px) {
-          .ck-grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 700px) { .ck-grid { grid-template-columns: 1fr; } }
 
         /* ── Card ── */
         .ck-card {
@@ -288,124 +215,183 @@ export default function CheckoutPage() {
         }
         .ck-card h2 {
           font-family: 'Playfair Display', serif;
-          font-size: 1.25rem;
+          font-size: 1.2rem;
           color: var(--gold);
           margin-bottom: 20px;
           display: flex;
           align-items: center;
-          gap: 10px;
-        }
-        .ck-card h2 .icon {
-          font-size: 1.1rem;
+          gap: 8px;
         }
 
-        /* ── Cart items ── */
-        .ck-cart-item {
+        /* ── Cart item row ── */
+        .ck-item {
           display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
+          align-items: center;
+          gap: 10px;
           padding: 12px 0;
           border-bottom: 1px solid var(--wood-border);
-          gap: 12px;
         }
-        .ck-cart-item:last-child { border-bottom: none; }
-        .ck-item-info { flex: 1; }
+        .ck-item:last-of-type { border-bottom: none; }
+
+        .ck-item-thumb {
+          width: 44px;
+          height: 44px;
+          border-radius: 6px;
+          object-fit: cover;
+          flex-shrink: 0;
+          border: 1px solid var(--wood-border);
+          background: var(--wood-light);
+        }
+
+        .ck-item-info { flex: 1; min-width: 0; }
         .ck-item-name {
           font-weight: 700;
           color: var(--cream);
-          font-size: .95rem;
+          font-size: .92rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         .ck-item-meta {
-          font-size: .82rem;
+          font-size: .79rem;
           color: var(--text-muted);
-          margin-top: 3px;
+          margin-top: 2px;
         }
+
+        /* ── Qty controls ── */
+        .ck-qty {
+          display: flex;
+          align-items: stretch;
+          background: var(--wood-light);
+          border: 1px solid var(--wood-border);
+          border-radius: 6px;
+          overflow: hidden;
+          flex-shrink: 0;
+        }
+        .ck-qty button {
+          width: 28px; height: 28px;
+          background: transparent;
+          border: none;
+          color: var(--gold);
+          font-size: 1.1rem;
+          font-weight: 700;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background .15s;
+          flex-shrink: 0;
+        }
+        .ck-qty button:hover { background: rgba(212,160,23,.15); }
+        .ck-qty-num {
+          min-width: 26px;
+          text-align: center;
+          font-size: .85rem;
+          font-weight: 700;
+          color: var(--cream);
+          border-left: 1px solid var(--wood-border);
+          border-right: 1px solid var(--wood-border);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 3px;
+          user-select: none;
+        }
+
         .ck-item-price {
           font-family: 'Playfair Display', serif;
           color: var(--gold);
+          font-size: .88rem;
           white-space: nowrap;
-          font-size: .95rem;
+          min-width: 52px;
+          text-align: right;
+          flex-shrink: 0;
+        }
+        .ck-item-price.on-request {
+          font-family: 'Lato', sans-serif;
+          font-size: .75rem;
+          color: var(--text-muted);
+          font-style: italic;
         }
 
+        .ck-remove {
+          background: none;
+          border: none;
+          color: var(--text-muted);
+          font-size: .9rem;
+          cursor: pointer;
+          padding: 4px;
+          line-height: 1;
+          flex-shrink: 0;
+          transition: color .15s;
+        }
+        .ck-remove:hover { color: var(--error); }
+
+        /* ── Totals ── */
         .ck-totals {
-          margin-top: 20px;
+          margin-top: 16px;
           border-top: 1px solid var(--wood-border);
-          padding-top: 16px;
+          padding-top: 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 7px;
         }
         .ck-totals-row {
           display: flex;
           justify-content: space-between;
-          font-size: .88rem;
+          font-size: .87rem;
           color: var(--text-muted);
-          margin-bottom: 8px;
         }
-        .ck-totals-row.total {
+        .ck-totals-row.grand {
           font-family: 'Playfair Display', serif;
-          font-size: 1.15rem;
+          font-size: 1.08rem;
           color: var(--cream);
-          margin-top: 10px;
+          padding-top: 8px;
+          margin-top: 4px;
+          border-top: 1px solid var(--wood-border);
         }
-        .ck-totals-row.total span:last-child {
-          color: var(--gold);
-        }
+        .ck-totals-row.grand span:last-child { color: var(--gold); }
 
         /* ── Form ── */
-        .ck-fields {
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
-        }
+        .ck-fields { display: flex; flex-direction: column; gap: 14px; }
         .ck-row {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 14px;
         }
-        @media (max-width: 420px) {
-          .ck-row { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 440px) { .ck-row { grid-template-columns: 1fr; } }
 
-        .ck-field {
-          display: flex;
-          flex-direction: column;
-          gap: 5px;
-        }
+        .ck-field { display: flex; flex-direction: column; gap: 5px; }
         .ck-field label {
-          font-size: .8rem;
+          font-size: .78rem;
           color: var(--cream-dim);
           text-transform: uppercase;
           letter-spacing: .07em;
           font-weight: 700;
         }
         .ck-field input,
-        .ck-field select,
         .ck-field textarea {
           background: var(--wood-light);
           border: 1px solid var(--wood-border);
           border-radius: 6px;
           color: var(--cream);
           font-family: 'Lato', sans-serif;
-          font-size: .93rem;
+          font-size: .92rem;
           padding: 10px 12px;
           outline: none;
-          transition: border-color .2s;
           width: 100%;
+          transition: border-color .2s, box-shadow .2s;
           -webkit-appearance: none;
         }
         .ck-field input::placeholder,
         .ck-field textarea::placeholder { color: var(--text-muted); }
         .ck-field input:focus,
-        .ck-field select:focus,
         .ck-field textarea:focus {
           border-color: var(--gold);
           box-shadow: 0 0 0 2px rgba(212,160,23,.18);
         }
-        .ck-field select option { background: var(--wood-mid); }
-        .ck-field textarea { resize: vertical; min-height: 80px; }
-        .ck-error {
-          font-size: .76rem;
-          color: var(--error);
-          margin-top: 2px;
-        }
+        .ck-field textarea { resize: vertical; min-height: 78px; }
+        .ck-err { font-size: .75rem; color: var(--error); margin-top: 1px; }
 
         /* ── Delivery toggle ── */
         .ck-toggle {
@@ -422,11 +408,11 @@ export default function CheckoutPage() {
           border: none;
           cursor: pointer;
           font-family: 'Lato', sans-serif;
-          font-size: .88rem;
+          font-size: .86rem;
           font-weight: 700;
           color: var(--text-muted);
+          letter-spacing: .03em;
           transition: background .2s, color .2s;
-          letter-spacing: .04em;
         }
         .ck-toggle button.active {
           background: var(--gold-dark);
@@ -434,119 +420,159 @@ export default function CheckoutPage() {
         }
 
         /* ── WhatsApp button ── */
-        .ck-wa-wrap {
-          margin-top: 32px;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
+        .ck-wa-wrap { margin-top: 28px; display: flex; flex-direction: column; gap: 12px; }
         .ck-wa-btn {
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 12px;
           width: 100%;
-          padding: 18px 28px;
+          padding: 17px 20px;
           border: none;
           border-radius: var(--radius);
           cursor: pointer;
           font-family: 'Playfair Display', serif;
-          font-size: clamp(1rem, 3vw, 1.2rem);
+          font-size: clamp(.92rem, 2.5vw, 1.12rem);
           font-weight: 700;
           letter-spacing: .03em;
+          color: var(--wood);
           background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold-dark) 100%);
           background-size: 200% 200%;
-          color: var(--wood);
-          box-shadow:
-            0 4px 20px rgba(212,160,23,.45),
-            inset 0 1px 0 rgba(255,255,255,.2);
+          box-shadow: 0 4px 20px rgba(212,160,23,.45), inset 0 1px 0 rgba(255,255,255,.2);
           transition: transform .15s, box-shadow .15s, background-position .4s;
-          animation: shimmer 4s ease infinite;
+          animation: ck-shimmer 4s ease infinite;
         }
         .ck-wa-btn:hover {
           transform: translateY(-2px);
-          box-shadow:
-            0 8px 32px rgba(212,160,23,.6),
-            inset 0 1px 0 rgba(255,255,255,.25);
+          box-shadow: 0 8px 32px rgba(212,160,23,.6), inset 0 1px 0 rgba(255,255,255,.25);
           background-position: right center;
         }
-        .ck-wa-btn:active {
-          transform: translateY(0);
-        }
-        @keyframes shimmer {
+        .ck-wa-btn:active { transform: translateY(0); }
+        @keyframes ck-shimmer {
           0%   { background-position: 0% 50%; }
           50%  { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
         }
-        .ck-wa-icon {
-          width: 28px;
-          height: 28px;
-          flex-shrink: 0;
-        }
+        .ck-wa-icon { width: 26px; height: 26px; flex-shrink: 0; }
 
         .ck-note {
           text-align: center;
-          font-size: .78rem;
+          font-size: .77rem;
           color: var(--text-muted);
-          line-height: 1.5;
+          line-height: 1.55;
         }
-        .ck-note a {
-          color: var(--gold);
-          text-decoration: none;
-        }
+        .ck-note a { color: var(--gold); text-decoration: none; }
 
-        /* ── Empty cart ── */
-        .ck-empty {
-          text-align: center;
-          padding: 48px 24px;
-          color: var(--text-muted);
+        /* ── Empty state ── */
+        .ck-empty { text-align: center; padding: 56px 24px; color: var(--text-muted); }
+        .ck-empty-icon { font-size: 3.5rem; margin-bottom: 14px; }
+        .ck-empty p { font-size: 1rem; margin-bottom: 18px; }
+        .ck-back {
+          display: inline-block;
+          padding: 10px 24px;
+          border: 1px solid var(--wood-border);
+          border-radius: 8px;
+          color: var(--gold);
+          font-family: 'Lato', sans-serif;
+          font-size: .9rem;
+          background: var(--wood-light);
+          text-decoration: none;
+          transition: background .2s;
         }
-        .ck-empty .icon { font-size: 3rem; margin-bottom: 12px; }
+        .ck-back:hover { background: var(--wood-border); }
       `}</style>
 
-      <div className="ck-checkout-root">
-        <div className="ck-wrapper">
+      <div className="ck-root">
+        <div className="ck-wrap">
 
-          {/* Header */}
+          {/* ── Header ── */}
           <header className="ck-header">
             <h1>Checkout</h1>
-            <p>Review your order and send it through WhatsApp — we'll confirm everything with you directly.</p>
+            <p>Review your order and finalise it via WhatsApp — we'll confirm everything directly.</p>
             <div className="ck-divider" />
           </header>
 
-          {cart.length === 0 ? (
+          {items.length === 0 ? (
+
+            /* ── Empty state ── */
             <div className="ck-card">
               <div className="ck-empty">
-                <div className="icon">🛒</div>
+                <div className="ck-empty-icon">🛒</div>
                 <p>Your cart is empty.</p>
+                <a href="/menu" className="ck-back">← Back to Menu</a>
               </div>
             </div>
+
           ) : (
             <div className="ck-grid">
 
-              {/* ── Left: Order Summary ── */}
+              {/* ══ LEFT: Order Summary ══ */}
               <div className="ck-card">
-                <h2><span className="icon">🧾</span> Your Order</h2>
+                <h2>🧾 Your Order</h2>
 
-                {cart.map((item, i) => (
-                  <div className="ck-cart-item" key={i}>
+                {items.map((item) => (
+                  <div className="ck-item" key={item.id}>
+
+                    {/* Thumbnail */}
+                    {item.image && (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="ck-item-thumb"
+                      />
+                    )}
+
+                    {/* Name + meta */}
                     <div className="ck-item-info">
                       <div className="ck-item-name">{item.name}</div>
                       <div className="ck-item-meta">
-                        Size: {item.size} &nbsp;·&nbsp; Qty: {item.quantity}
-                        &nbsp;·&nbsp; {formatCurrency(item.unitPrice)} each
+                        {item.size}
+                        {typeof item.price === "number" && (
+                          <> &nbsp;·&nbsp; {formatCurrency(item.price)} each</>
+                        )}
                       </div>
                     </div>
-                    <div className="ck-item-price">
-                      {formatCurrency(item.unitPrice * item.quantity)}
+
+                    {/* Quantity +/- — uses incrementItem / decrementItem by item.id */}
+                    <div className="ck-qty">
+                      <button
+                        type="button"
+                        aria-label="Decrease quantity"
+                        onClick={() => decrementItem(item.id)}
+                      >−</button>
+                      <div className="ck-qty-num">{item.quantity}</div>
+                      <button
+                        type="button"
+                        aria-label="Increase quantity"
+                        onClick={() => incrementItem(item.id)}
+                      >+</button>
                     </div>
+
+                    {/* Line total */}
+                    {typeof item.price === "number" ? (
+                      <div className="ck-item-price">
+                        {formatCurrency(item.price * item.quantity)}
+                      </div>
+                    ) : (
+                      <div className="ck-item-price on-request">on request</div>
+                    )}
+
+                    {/* Remove */}
+                    <button
+                      type="button"
+                      className="ck-remove"
+                      aria-label={`Remove ${item.name}`}
+                      onClick={() => removeFromCart(item.id)}
+                    >✕</button>
+
                   </div>
                 ))}
 
+                {/* Totals — uses totalPrice from context directly */}
                 <div className="ck-totals">
                   <div className="ck-totals-row">
                     <span>Subtotal</span>
-                    <span>{formatCurrency(subtotal)}</span>
+                    <span>{formatCurrency(totalPrice)}</span>
                   </div>
                   <div className="ck-totals-row">
                     <span>Delivery</span>
@@ -556,93 +582,61 @@ export default function CheckoutPage() {
                         : formatCurrency(deliveryFee)}
                     </span>
                   </div>
-                  <div className="ck-totals-row total">
+                  <div className="ck-totals-row grand">
                     <span>Total</span>
-                    <span>{formatCurrency(total)}</span>
+                    <span>{formatCurrency(grandTotal)}</span>
                   </div>
                 </div>
               </div>
 
-              {/* ── Right: Billing Form ── */}
+              {/* ══ RIGHT: Billing Form ══ */}
               <div className="ck-card">
-                <h2><span className="icon">📋</span> Your Details</h2>
+                <h2>📋 Your Details</h2>
 
                 <div className="ck-fields">
 
-                  {/* Name row */}
                   <div className="ck-row">
                     <div className="ck-field">
                       <label>First Name</label>
-                      <input
-                        type="text"
-                        placeholder="Jane"
-                        value={form.firstName}
-                        onChange={set("firstName")}
-                      />
-                      {errors.firstName && <span className="ck-error">{errors.firstName}</span>}
+                      <input type="text" placeholder="Jane" value={form.firstName} onChange={field("firstName")} />
+                      {errors.firstName && <span className="ck-err">{errors.firstName}</span>}
                     </div>
                     <div className="ck-field">
                       <label>Last Name</label>
-                      <input
-                        type="text"
-                        placeholder="Smith"
-                        value={form.lastName}
-                        onChange={set("lastName")}
-                      />
-                      {errors.lastName && <span className="ck-error">{errors.lastName}</span>}
+                      <input type="text" placeholder="Smith" value={form.lastName} onChange={field("lastName")} />
+                      {errors.lastName && <span className="ck-err">{errors.lastName}</span>}
                     </div>
                   </div>
 
-                  {/* Contact row */}
                   <div className="ck-row">
                     <div className="ck-field">
                       <label>Phone</label>
-                      <input
-                        type="tel"
-                        placeholder="+44 7000 000000"
-                        value={form.phone}
-                        onChange={set("phone")}
-                      />
-                      {errors.phone && <span className="ck-error">{errors.phone}</span>}
+                      <input type="tel" placeholder="+44 7000 000000" value={form.phone} onChange={field("phone")} />
+                      {errors.phone && <span className="ck-err">{errors.phone}</span>}
                     </div>
                     <div className="ck-field">
                       <label>Email</label>
-                      <input
-                        type="email"
-                        placeholder="jane@example.com"
-                        value={form.email}
-                        onChange={set("email")}
-                      />
-                      {errors.email && <span className="ck-error">{errors.email}</span>}
+                      <input type="email" placeholder="jane@example.com" value={form.email} onChange={field("email")} />
+                      {errors.email && <span className="ck-err">{errors.email}</span>}
                     </div>
                   </div>
 
-                  {/* Delivery / Pickup toggle */}
                   <div className="ck-field">
                     <label>Fulfilment</label>
                     <div className="ck-toggle">
                       <button
                         type="button"
                         className={form.deliveryType === "delivery" ? "active" : ""}
-                        onClick={() =>
-                          setForm((p) => ({ ...p, deliveryType: "delivery" }))
-                        }
-                      >
-                        🚚 Delivery
-                      </button>
+                        onClick={() => setForm((p) => ({ ...p, deliveryType: "delivery" }))}
+                      >🚚 Delivery</button>
                       <button
                         type="button"
                         className={form.deliveryType === "pickup" ? "active" : ""}
-                        onClick={() =>
-                          setForm((p) => ({ ...p, deliveryType: "pickup" }))
-                        }
-                      >
-                        🏪 Pickup
-                      </button>
+                        onClick={() => setForm((p) => ({ ...p, deliveryType: "pickup" }))}
+                      >🏪 Pickup</button>
                     </div>
                   </div>
 
-                  {/* Address (only when delivery) */}
                   {form.deliveryType === "delivery" && (
                     <div className="ck-field">
                       <label>Delivery Address</label>
@@ -650,34 +644,33 @@ export default function CheckoutPage() {
                         type="text"
                         placeholder="123 High Street, London, SW1A 1AA"
                         value={form.address}
-                        onChange={set("address")}
+                        onChange={field("address")}
                       />
-                      {errors.address && <span className="ck-error">{errors.address}</span>}
+                      {errors.address && <span className="ck-err">{errors.address}</span>}
                     </div>
                   )}
 
-                  {/* Special instructions */}
                   <div className="ck-field">
-                    <label>Special Instructions <span style={{ fontWeight: 300, textTransform: "none" }}>(optional)</span></label>
+                    <label>
+                      Special Instructions&nbsp;
+                      <span style={{ fontWeight: 300, textTransform: "none", fontSize: ".82em" }}>(optional)</span>
+                    </label>
                     <textarea
-                      placeholder="Allergies, dietary notes, preferred delivery time…"
+                      placeholder="Allergies, dietary needs, preferred delivery time…"
                       value={form.instructions}
-                      onChange={set("instructions")}
+                      onChange={field("instructions")}
                     />
                   </div>
 
                 </div>
 
-                {/* WhatsApp CTA */}
+                {/* ── WhatsApp CTA ── */}
                 <div className="ck-wa-wrap">
                   <button className="ck-wa-btn" onClick={handleWhatsApp}>
-                    {/* WhatsApp SVG icon */}
                     <svg className="ck-wa-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="24" cy="24" r="24" fill="rgba(0,0,0,0.15)" />
                       <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M24 10C16.268 10 10 16.268 10 24c0 2.934.858 5.667 2.337 7.964L10 38l6.22-2.305A13.933 13.933 0 0024 38c7.732 0 14-6.268 14-14S31.732 10 24 10zm-4.23 8.7c-.34-.017-.717.007-1.06.18-.3.153-.73.54-1.25 1.14-.47.55-.88 1.35-.88 2.37 0 1.01.56 2.05 1.15 2.86a14.01 14.01 0 005.3 4.86c.82.41 1.62.66 2.27.73.7.07 1.22-.05 1.57-.28.48-.31.83-.79 1.03-1.27.16-.39.3-1.05.2-1.44-.08-.33-.42-.57-.79-.77l-2.17-1.09c-.35-.18-.62-.18-.86.02-.26.22-.5.5-.69.73-.18.21-.31.27-.51.17a9.23 9.23 0 01-3.49-3.04c-.12-.2-.08-.34.07-.5.2-.21.44-.47.6-.68.17-.22.28-.36.33-.6.06-.25-.03-.5-.18-.74l-.98-1.88c-.15-.3-.4-.52-.67-.54z"
+                        fillRule="evenodd" clipRule="evenodd"
+                        d="M24 4C12.954 4 4 12.954 4 24c0 3.734 1.009 7.236 2.773 10.24L4 44l10.02-2.628A19.914 19.914 0 0024 44c11.046 0 20-8.954 20-20S35.046 4 24 4zm-5.19 11.05c-.44-.02-.93.008-1.38.23-.39.198-.95.7-1.625 1.48-.61.715-1.755-1.145 3.08 0 1.313.728 2.665 1.495 3.718a18.21 18.21 0 006.89 6.314c1.066.533 2.104.858 2.95.95.91.091 1.586-.065 2.04-.364.624-.403 1.079-1.027 1.339-1.651.208-.507.39-1.365.26-1.872-.104-.43-.546-.741-1.027-1l-2.82-1.417c-.455-.234-.806-.234-1.118.026-.338.286-.65.65-.897.949-.234.273-.403.351-.663.221a11.993 11.993 0 01-4.537-3.952c-.156-.26-.104-.442.091-.65.26-.273.572-.611.78-.897.221-.286.364-.468.429-.78.078-.325-.039-.65-.234-.962l-1.274-2.444c-.195-.39-.52-.676-.871-.702z"
                         fill="#1A1008"
                       />
                     </svg>
@@ -685,9 +678,12 @@ export default function CheckoutPage() {
                   </button>
 
                   <p className="ck-note">
-                    Tapping the button above opens WhatsApp with your order pre-filled.
-                    We'll confirm availability, payment, and dispatch time directly with you.<br />
-                    Questions? <a href="https://wa.me/447466705927" target="_blank" rel="noopener noreferrer">Message us directly</a>.
+                    Tapping opens WhatsApp with your full order pre-filled.<br />
+                    We'll confirm availability &amp; delivery time directly with you.<br />
+                    Questions?{" "}
+                    <a href="https://wa.me/447466705927" target="_blank" rel="noopener noreferrer">
+                      Message us directly
+                    </a>.
                   </p>
                 </div>
 
