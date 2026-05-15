@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -11,41 +11,13 @@ interface CartItem {
   unitPrice: number;
 }
 
-// ─── useCart hook ─────────────────────────────────────────────────────────────
-// Reads from localStorage key "cart" (array of CartItem).
-// ✅ To integrate with your real store, replace this hook with your own:
-//    import { useCart } from "@/context/CartContext";
-//    or however your app exposes cart state.
+// ─── Demo cart (replace with your real cart context / store) ──────────────────
 
-function useCart(): CartItem[] {
-  const [cart, setCart] = useState<CartItem[]>([]);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("cart");
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) setCart(parsed);
-      }
-    } catch {
-      console.warn("Could not read cart from localStorage");
-    }
-
-    // Keep in sync if another tab / component updates the cart
-    function onStorage(e: StorageEvent) {
-      if (e.key === "cart" && e.newValue) {
-        try {
-          const parsed = JSON.parse(e.newValue);
-          if (Array.isArray(parsed)) setCart(parsed);
-        } catch { /* ignore */ }
-      }
-    }
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
-
-  return cart;
-}
+const DEMO_CART: CartItem[] = [
+  { name: "Clever Kitchen Soup", size: "2L", quantity: 2, unitPrice: 9.99 },
+  { name: "Hearty Stew", size: "4L", quantity: 1, unitPrice: 17.99 },
+  { name: "Family Curry", size: "6L", quantity: 1, unitPrice: 24.99 },
+];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -56,56 +28,39 @@ function formatCurrency(amount: number) {
 function buildWhatsAppMessage(
   cart: CartItem[],
   form: FormState,
-  subtotal: number,
-  deliveryFee: number,
   total: number
 ): string {
-  // One line per cart item
   const itemLines = cart
-    .map((item) => {
-      const lineTotal = formatCurrency(item.unitPrice * item.quantity);
-      return item.unitPrice > 0
-        ? `- ${item.name} - ${item.size} × ${item.quantity} = ${lineTotal}`
-        : `- ${item.name} - ${item.size} × ${item.quantity}`;
-    })
+    .map(
+      (item) =>
+        `• ${item.name} (${item.size}) x${item.quantity} — ${formatCurrency(
+          item.unitPrice * item.quantity
+        )}`
+    )
     .join("\n");
 
-  const deliveryLine =
-    deliveryFee > 0
-      ? `Delivery: ${formatCurrency(deliveryFee)}`
-      : "Delivery: Free (Pickup)";
-
-  const fulfilmentLine =
+  const delivery =
     form.deliveryType === "delivery"
-      ? `📍 Delivery to: ${form.address}`
-      : "📍 Collection / Pickup";
-
-  const customerLines = [
-    `👤 Name: ${form.firstName} ${form.lastName}`,
-    `📞 Phone: ${form.phone}`,
-    `📧 Email: ${form.email}`,
-    fulfilmentLine,
-    ...(form.instructions.trim()
-      ? [`📝 Special instructions: ${form.instructions.trim()}`]
-      : []),
-  ];
+      ? `Delivery to: ${form.address}`
+      : "Collection / Pickup";
 
   const lines = [
-    "Hi Clever Kitchen 👋",
-    "I would like to order:",
+    "Hello! I'd like to place an order 🛒",
     "",
+    "━━━ ORDER SUMMARY ━━━",
     itemLines,
     "",
-    `Subtotal: ${formatCurrency(subtotal)}`,
-    deliveryLine,
-    `*Total: ${formatCurrency(total)}*`,
+    `TOTAL: ${formatCurrency(total)}`,
     "",
-    ...customerLines,
-    "",
-    "Thank you! 🙏",
-  ];
+    "━━━ MY DETAILS ━━━",
+    `Name: ${form.firstName} ${form.lastName}`,
+    `Phone: ${form.phone}`,
+    `Email: ${form.email}`,
+    delivery,
+    form.instructions ? `Special instructions: ${form.instructions}` : "",
+  ].filter((l) => l !== undefined);
 
-  return encodeURIComponent(lines.join("\n"));
+  return encodeURIComponent(lines.join("\n").trim());
 }
 
 // ─── Form state ───────────────────────────────────────────────────────────────
@@ -133,10 +88,7 @@ const EMPTY_FORM: FormState = {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function CheckoutPage() {
-  // ✅ Reads from localStorage["cart"] automatically.
-  // To use your own store instead, replace this line:
-  //   const { cart } = useCart();  ← your real hook
-  const cart = useCart();
+  const cart = DEMO_CART; // 🔁 swap with useCart() or your real source
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>(
     {}
@@ -178,7 +130,7 @@ export default function CheckoutPage() {
 
   function handleWhatsApp() {
     if (!validate()) return;
-    const msg = buildWhatsAppMessage(cart, form, subtotal, deliveryFee, total);
+    const msg = buildWhatsAppMessage(cart, form, total);
     window.open(`https://wa.me/447466705927?text=${msg}`, "_blank");
   }
 
