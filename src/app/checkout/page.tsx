@@ -56,30 +56,34 @@ function buildWhatsAppMessage(
 
   const grandTotal = totalPrice + deliveryFee;
 
-  const lines = [
-    "Hi MATANKEES Kitchen 👋",
-    "I would like to order:",
-    "",
-    itemLines,
-    "",
-    `Subtotal: ${formatCurrency(totalPrice)}`,
-    deliveryFee > 0
-      ? `Delivery: ${formatCurrency(deliveryFee)}`
-      : "Delivery: Free (Pickup)",
-    `*Total: ${formatCurrency(grandTotal)}*`,
-    "",
-    `👤 Name: ${form.firstName} ${form.lastName}`,
-    `📞 Phone: ${form.phone}`,
-    `📧 Email: ${form.email}`,
-    form.deliveryType === "delivery"
-      ? `📍 Delivery to: ${form.address}`
-      : "📍 Collection / Pickup",
-    ...(form.instructions.trim()
-      ? [`📝 Special instructions: ${form.instructions.trim()}`]
-      : []),
-    "",
-    "Thank you! 🙏",
-  ];
+  // Improved & Clean WhatsApp Message
+const lines = [
+  "Hi MATANKEES Kitchen 👋",
+  "",
+  "I would like to place an order:",
+  "",
+  ...cartItems.map(item => 
+    `- ${item.name} - ${item.size} × ${item.quantity} = £${(Number(item.price) * item.quantity).toFixed(2)}`
+  ),
+  "",
+  `Subtotal: £${totalPrice.toFixed(2)}`,
+  deliveryFee > 0 
+    ? `Delivery Fee: £${deliveryFee.toFixed(2)}` 
+    : "Pickup: Free",
+  `*Total: £${grandTotal.toFixed(2)}*`,
+  "",
+  `👤 Name: ${form.firstName} ${form.lastName}`,
+  `📞 Phone: ${form.phone}`,
+  `📧 Email: ${form.email}`,
+  form.deliveryType === "delivery"
+    ? `📍 Delivery to: ${form.address}`
+    : "📍 Pickup in Baldock",
+  ...(form.instructions?.trim() 
+    ? [`📝 Special instructions: ${form.instructions.trim()}`] 
+    : []),
+  "",
+  "Thank you! 🙏 Please confirm availability and time.",
+];
 
   return encodeURIComponent(lines.join("\n"));
 }
