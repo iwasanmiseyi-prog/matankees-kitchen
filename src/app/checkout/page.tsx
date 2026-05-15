@@ -56,34 +56,33 @@ function buildWhatsAppMessage(
 
   const grandTotal = totalPrice + deliveryFee;
 
- // Dynamic WhatsApp Message - Improved Version
-const whatsappMessage = `
-Hi MATANKEES Kitchen 👋
+  const lines = [
+    "Hi MATANKEES Kitchen 👋",
+    "I would like to order:",
+    "",
+    itemLines,
+    "",
+    `Subtotal: ${formatCurrency(totalPrice)}`,
+    deliveryFee > 0
+      ? `Delivery: ${formatCurrency(deliveryFee)}`
+      : "Delivery: Free (Pickup)",
+    `*Total: ${formatCurrency(grandTotal)}*`,
+    "",
+    `👤 Name: ${form.firstName} ${form.lastName}`,
+    `📞 Phone: ${form.phone}`,
+    `📧 Email: ${form.email}`,
+    form.deliveryType === "delivery"
+      ? `📍 Delivery to: ${form.address}`
+      : "📍 Collection / Pickup",
+    ...(form.instructions.trim()
+      ? [`📝 Special instructions: ${form.instructions.trim()}`]
+      : []),
+    "",
+    "Thank you! 🙏",
+  ];
 
-I would like to place an order:
-
-${cartItems.map(item => 
-  `- ${item.name} (${item.size}) × ${item.quantity} = £${(Number(item.price) * item.quantity).toFixed(2)}`
-).join('\n')}
-
-──────────────────
-Subtotal: £${subtotal.toFixed(2)}
-${deliveryFee > 0 ? `Delivery Fee: £${deliveryFee.toFixed(2)}` : 'Pickup: Free'}
-*Total: £${total.toFixed(2)}*
-
-👤 Name: ${formData.firstName} ${formData.lastName}
-📞 Phone: ${formData.phone}
-📧 Email: ${formData.email}
-📍 ${formData.deliveryOption === 'delivery' ? `Delivery Address: ${formData.address}` : 'Pickup in Baldock'}
-
-Special Instructions:
-${formData.notes || 'None'}
-
-Thank you! 🙏 
-Please confirm availability and delivery time.
-`;
-
-const whatsappUrl = `https://wa.me/447466705927?text=${encodeURIComponent(whatsappMessage.trim())}`;
+  return encodeURIComponent(lines.join("\n"));
+}
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
