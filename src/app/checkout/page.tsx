@@ -57,7 +57,7 @@ function buildWhatsAppMessage(
   const grandTotal = totalPrice + deliveryFee;
 
   const lines = [
-    "Hi Clever Kitchen 👋",
+    "Hi MATANKEES Kitchen 👋",
     "I would like to order:",
     "",
     itemLines,
