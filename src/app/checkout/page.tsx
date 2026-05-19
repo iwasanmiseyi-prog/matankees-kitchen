@@ -40,8 +40,7 @@ import type { CartItem } from "@/components/CartProvider";
 function buildWhatsAppMessage(
   items: CartItem[],
   form: FormState,
-  totalPrice: number,
-  deliveryFee: number
+  totalPrice: number
 ): string {
   const itemLines = items
     .map((item) => {
@@ -54,8 +53,6 @@ function buildWhatsAppMessage(
     })
     .join("\n");
 
-  const grandTotal = totalPrice + deliveryFee;
-
   const lines = [
     "Hi MATANKEES Kitchen 👋",
     "I would like to order:",
@@ -63,10 +60,12 @@ function buildWhatsAppMessage(
     itemLines,
     "",
     `Subtotal: ${formatCurrency(totalPrice)}`,
-    deliveryFee > 0
-      ? `Delivery: ${formatCurrency(deliveryFee)}`
-      : "Delivery: Free (Pickup)",
-    `*Total: ${formatCurrency(grandTotal)}*`,
+    form.deliveryType === "delivery"
+      ? "Delivery Fee: To be confirmed based on location"
+      : "Delivery Fee: Free (Pickup)",
+    form.deliveryType === "delivery"
+      ? "*Total: To be confirmed via WhatsApp*"
+      : `*Total: ${formatCurrency(totalPrice)}*`,
     "",
     `👤 Name: ${form.firstName} ${form.lastName}`,
     `📞 Phone: ${form.phone}`,
@@ -78,7 +77,7 @@ function buildWhatsAppMessage(
       ? [`📝 Special instructions: ${form.instructions.trim()}`]
       : []),
     "",
-    "Thank you! 🙏",
+    "Please confirm delivery fee and availability when you reply.",
   ];
 
   return encodeURIComponent(lines.join("\n"));
@@ -93,9 +92,6 @@ export default function CheckoutPage() {
 
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
-
-  const deliveryFee = form.deliveryType === "delivery" ? 3.99 : 0;
-  const grandTotal = totalPrice + deliveryFee;
 
   // Field change helper
   function field(key: keyof FormState) {
@@ -122,7 +118,7 @@ export default function CheckoutPage() {
   // Open WhatsApp
   function handleWhatsApp() {
     if (!validate()) return;
-    const msg = buildWhatsAppMessage(items, form, totalPrice, deliveryFee);
+    const msg = buildWhatsAppMessage(items, form, totalPrice);
     window.open(`https://wa.me/447466705927?text=${msg}`, "_blank");
   }
 
@@ -575,16 +571,20 @@ export default function CheckoutPage() {
                     <span>{formatCurrency(totalPrice)}</span>
                   </div>
                   <div className="ck-totals-row">
-                    <span>Delivery</span>
+                    <span>Delivery Fee</span>
                     <span>
                       {form.deliveryType === "pickup"
                         ? "Free (Pickup)"
-                        : formatCurrency(deliveryFee)}
+                        : "To be confirmed via WhatsApp"}
                     </span>
                   </div>
                   <div className="ck-totals-row grand">
                     <span>Total</span>
-                    <span>{formatCurrency(grandTotal)}</span>
+                    <span>
+                      {form.deliveryType === "pickup"
+                        ? formatCurrency(totalPrice)
+                        : "To be confirmed via WhatsApp"}
+                    </span>
                   </div>
                 </div>
               </div>
