@@ -119,7 +119,7 @@ export default function MenuPage() {
                         <div className="bg-wood-dark/80 p-4 rounded-lg border border-wood-light text-center">
                           <p className="text-white font-semibold">Available on order</p>
                           <p className="text-sm text-muted-foreground mt-2">
-                            Please message us on WhatsApp for {item.category === "Other Meals" ? "portions and pricing" : "2L / 4L / 6L portions and pricing"}.
+                            Please message us on WhatsApp for {item.category === "Pastries" || item.category === "Other Meals" ? "portions and pricing" : "2L / 4L / 6L portions and pricing"}.
                           </p>
                           <a
                             href="https://wa.me/447466705927"
