@@ -12,27 +12,27 @@ export interface MenuItem {
 
 /** All pot meals are priced at 2L / 4L / 6L only (GBP). */
 export const menuData: MenuItem[] = [
-  { category: "Rice Dishes", name: "Jollof Rice", prices: { "2L": 20, "4L": 35, "6L": 55 }, image: "/images/jollof-rice.jpeg" },
-  { category: "Rice Dishes", name: "Fried Rice", prices: { "2L": 20, "4L": 35, "6L": 55 }, image: "/images/fried-rice.jpg" },
+  { category: "Rice Dishes", name: "Jollof Rice", prices: { "2L": 20, "4L": 35, "6L": 55 }, image: "/images/jollof-rice.jpg" },
+  { category: "Rice Dishes", name: "Fried Rice", prices: { "2L": 20, "4L": 35, "6L": 55 }, image: "/images/fried-rice.png" },
   { category: "Rice Dishes", name: "Ofada Rice", prices: { on_order: true }, image: "/images/ofada-rice.jpg" },
 
   { category: "Proteins", name: "Stewed Chicken / Chicken Stew", prices: { "2L": 30, "4L": 55, "6L": 90 }, image: "/images/stewed-chicken.jpg" },
-  { category: "Proteins", name: "Assorted Meat", prices: { "2L": 35, "4L": 60, "6L": 95 }, image: "/images/assorted-meat.jpg" },
+  { category: "Proteins", name: "Assorted Meat Stew", prices: { "2L": 35, "4L": 60, "6L": 95 }, image: "/images/assorted-meat.jpg" },
   { category: "Proteins", name: "Peppered Beef", prices: { on_order: true }, image: "/images/peppered-beef.jpg" },
   { category: "Proteins", name: "Fish (Hake)", prices: { on_order: true }, image: "/images/fish-hake.jpg" },
   { category: "Proteins", name: "Grilled Peppered Fish / Fish Stew", prices: { on_order: true }, image: "/images/grilled-peppered-fish.jpg" },
   { category: "Proteins", name: "Peppered Goat Meat", prices: { on_order: true }, image: "/images/peppered goatmeat.jpg" },
   { category: "Proteins", name: "Peppered Ponmo", prices: { on_order: true }, image: "/images/peppered ponmo.jpg" },
 
-  { category: "Soups & Stews", name: "Ayamase (Green pepper stew)", prices: { "2L": 40, "4L": 70, "6L": 110 }, image: "/images/ayamase.jpg" },
-  { category: "Soups & Stews", name: "Edikaekong (Waterleaf & ugu)", prices: { "2L": 45, "4L": 75, "6L": 100 }, image: "/images/edikaekong.jpg" },
-  { category: "Soups & Stews", name: "Efo Riro (Vegetable soup)", prices: { "2L": 40, "4L": 65, "6L": 95 }, image: "/images/efo-riro.jpeg" },
-  { category: "Soups & Stews", name: "Ila Alasepo (Okra Soup)", prices: { "2L": 35, "4L": 55, "6L": 90 }, image: "/images/ila-alasepo.jpg" },
+  { category: "Soups & Stews", name: "Ayamase", prices: { "2L": 40, "4L": 70, "6L": 110 }, image: "/images/ayamase.jpg" },
+  { category: "Soups & Stews", name: "Edikaekong", prices: { "2L": 45, "4L": 75, "6L": 100 }, image: "/images/edikaekong.jpg" },
+  { category: "Soups & Stews", name: "Efo Riro", prices: { "2L": 40, "4L": 65, "6L": 95 }, image: "/images/efo-riro.jpeg" },
+  { category: "Soups & Stews", name: "Okra Soup", prices: { "2L": 35, "4L": 55, "6L": 90 }, image: "/images/ila-alasepo.jpg" },
   { category: "Soups & Stews", name: "Egusi", prices: { "2L": 40, "4L": 65, "6L": 95 }, image: "/images/egusi-soup.jpeg" },
-  { category: "Soups & Stews", name: "Bitterleaf Soup", prices: { "2L": 24, "4L": 48, "6L": 72 }, image: "/images/bitterleaf-soup.jpg" },
+  { category: "Soups & Stews", name: "Bitterleaf Soup", prices: { on_order: true }, image: "/images/bitterleaf-soup.jpg" },
   { category: "Soups & Stews", name: "Afang Soup", prices: { "2L": 45, "4L": 75, "6L": 100 }, image: "/images/afang-soup.jpg" },
-  { category: "Soups & Stews", name: "Gbegiri", prices: { "2L": 20, "4L": 40, "6L": 60 }, image: "/images/gbegiri.jpeg" },
-  { category: "Soups & Stews", name: "Ewedu", prices: { "2L": 20, "4L": 40, "6L": 60 }, image: "/images/ewedu.jpg" },
+  { category: "Soups & Stews", name: "Amala, Ewedu & Gbegiri", prices: { on_order: true }, image: "/images/gbegiri.jpeg" },
+  { category: "Soups & Stews", name: "Oha Soup", prices: { "2L": 20, "4L": 40, "6L": 60 }, image: "/images/Oha Soup.jpg" },
   { category: "Soups & Stews", name: "Ogbono", prices: { "2L": 35, "4L": 55, "6L": 90 }, image: "/images/ogbono.jpg" },
   { category: "Soups & Stews", name: "Ofada Sauce", prices: { "2L": 40, "4L": 70, "6L": 110 }, image: "/images/ofada-sauce.jpg" },
 
