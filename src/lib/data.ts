@@ -17,7 +17,7 @@ export const menuData: MenuItem[] = [
   { category: "Rice Dishes", name: "Ofada Rice", prices: { on_order: true }, image: "/images/ofada-rice.jpg" },
 
   { category: "Proteins", name: "Chicken Stew", prices: { "2L": 30, "4L": 55, "6L": 80 }, image: "/images/stewed-chicken.jpg" },
-  { category: "Proteins", name: "Assorted Meat Stew", prices: { "2L": 35, "4L": 65, "6L": 95 }, image: "/images/assorted-meat.jpg" },
+  { category: "Proteins", name: "Assorted Meat Stew", prices: { "2L": 35, "4L": 65, "6L": 95 }, image: "/images/Assorted meat stew.png" },
   { category: "Proteins", name: "Peppered Beef", prices: { on_order: true }, image: "/images/peppered-beef.jpg" },
   { category: "Proteins", name: "Fish (Hake)", prices: { on_order: true }, image: "/images/fish-hake.jpg" },
   { category: "Proteins", name: "Grilled Peppered Fish / Fish Stew", prices: { on_order: true }, image: "/images/grilled-peppered-fish.jpg" },
