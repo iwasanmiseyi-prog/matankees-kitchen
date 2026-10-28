@@ -23,23 +23,41 @@ export default function MenuPage() {
     { id: "other", title: "🍽️ Other Meals", sourceCategories: ["Other Meals"] },
   ];
 
-  const getDisplayPrices = (prices: Record<string, number | boolean>) => {
+  const sizeOrder: Record<string, number> = {
+    "Each (min 7)": 10,
+    "10 pcs": 12,
+    "20 pcs": 14,
+    "25 pcs": 16,
+    "Small tray (25pcs)": 18,
+    "650-800mls": 20,
+    "650-800ml": 20,
+    "2LTRS": 30,
+    "2L": 30,
+    "4LTRS": 40,
+    "4L": 40,
+    "6LTRS": 50,
+    "6L": 50,
+    "20-24LTRS": 60,
+    "20-24L": 60,
+  };
+
+  const getDisplayPrices = (prices: Record<string, number | boolean | undefined>) => {
     if (prices.on_order) return [] as Array<[string, number | boolean]>;
 
-    const allowed = ["2L", "4L", "6L"] as const;
-    return allowed
-      .map((k) => [k, prices[k]] as [string, number | boolean])
-      .filter(([, p]) => typeof p === "number");
+    return Object.entries(prices)
+      .filter(([k, v]) => k !== "on_order" && typeof v === "number")
+      .sort(([a], [b]) => (sizeOrder[a] ?? 99) - (sizeOrder[b] ?? 99)) as Array<[string, number | boolean]>;
   };
 
   const handleAddToCart = (item: any, size: string, price: number | boolean) => {
+    const qty = item.minOrder || 1;
     addToCart({
       id: `${item.name}-${size}`,
       name: item.name,
       size: size === "each" ? "Per Item" : size,
       price: typeof price === "number" ? price : "on request",
       image: item.image,
-      quantity: 1,
+      quantity: qty,
     });
     
     setAddedItem(`${item.name}-${size}`);
@@ -119,7 +137,7 @@ export default function MenuPage() {
                         <div className="bg-wood-dark/80 p-4 rounded-lg border border-wood-light text-center">
                           <p className="text-white font-semibold">Available on order</p>
                           <p className="text-sm text-muted-foreground mt-2">
-                            Please message us on WhatsApp for {item.category === "Pastries" || item.category === "Other Meals" ? "portions and pricing" : "2L / 4L / 6L portions and pricing"}.
+                            Please message us on WhatsApp for portions, special requests, and custom pricing.
                           </p>
                           <a
                             href="https://wa.me/447466705927"
