@@ -25,12 +25,17 @@ export default function MenuPage() {
 
   const sizeOrder: Record<string, number> = {
     "Each (min 7)": 10,
+    "Each (min 10)": 10,
+    "Per wrap (min 10)": 10,
     "10 pcs": 12,
+    "15 pcs": 13,
     "20 pcs": 14,
     "25 pcs": 16,
     "Small tray (25pcs)": 18,
     "650-800mls": 20,
     "650-800ml": 20,
+    "1L": 25,
+    "1LTR": 25,
     "2LTRS": 30,
     "2L": 30,
     "4LTRS": 40,
@@ -39,6 +44,8 @@ export default function MenuPage() {
     "6L": 50,
     "20-24LTRS": 60,
     "20-24L": 60,
+    "20LTRS": 60,
+    "20L": 60,
   };
 
   const getDisplayPrices = (prices: Record<string, number | boolean | undefined>) => {

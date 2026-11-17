@@ -16,13 +16,13 @@ export const menuData: MenuItem[] = [
   {
     category: "Rice Dishes",
     name: "Smokey Jollof Rice",
-    prices: { "650-800mls": 8, "2L": 20, "4L": 35, "6L": 55, "20-24L": 120 },
+    prices: { "650-800mls": 8, "2L": 25, "4L": 45, "6L": 60, "20L": 125 },
     image: "/images/jollof-rice.jpg",
   },
   {
     category: "Rice Dishes",
     name: "Fried Rice",
-    prices: { "650-800mls": 8, "2L": 20, "4L": 35, "6L": 55, "20-24L": 120 },
+    prices: { "650-800mls": 8, "2L": 25, "4L": 45, "6L": 60, "20L": 125 },
     image: "/images/fried-rice.png",
   },
   {
@@ -43,7 +43,7 @@ export const menuData: MenuItem[] = [
   {
     category: "Proteins",
     name: "Peppered Beef",
-    prices: { "10 pcs": 30 },
+    prices: { "10 pcs": 35 },
     note: "10 pieces",
     image: "/images/peppered-beef.jpg",
   },
@@ -62,13 +62,13 @@ export const menuData: MenuItem[] = [
   {
     category: "Proteins",
     name: "Chicken Stew",
-    prices: { "650-800mls": 10, "2L": 30, "4L": 55, "6L": 80 },
+    prices: { "650-800mls": 10, "2L": 35, "4L": 65, "6L": 95 },
     image: "/images/stewed-chicken.jpg",
   },
   {
     category: "Proteins",
     name: "Beef Stew",
-    prices: { "2L": 45, "4L": 75, "6L": 95 },
+    prices: { "2L": 45, "4L": 80, "6L": 110 },
     image: "/images/assorted-meat.jpg",
   },
   {
@@ -80,7 +80,7 @@ export const menuData: MenuItem[] = [
   {
     category: "Proteins",
     name: "Hake / Titus Fish Stew",
-    prices: { "2L": 50, "4L": 90, "6L": 110 },
+    prices: { "2L": 50, "4L": 95, "6L": 125 },
     image: "/images/fish-hake.jpg",
   },
   {
@@ -94,7 +94,7 @@ export const menuData: MenuItem[] = [
   {
     category: "Soups & Stews",
     name: "Ayamase / Ofada Sauce",
-    prices: { "650-800mls": 12, "2L": 40, "4L": 75, "6L": 110 },
+    prices: { "650-800mls": 12, "2L": 45, "4L": 85, "6L": 115 },
     image: "/images/ayamase.jpg",
   },
   {
@@ -142,7 +142,7 @@ export const menuData: MenuItem[] = [
   {
     category: "Soups & Stews",
     name: "Bitterleaf Soup",
-    prices: { "2L": 40, "4L": 75, "6L": 100 },
+    prices: { "2L": 45, "4L": 80, "6L": 115 },
     image: "/images/bitterleaf-soup.jpg",
   },
   {
@@ -156,8 +156,8 @@ export const menuData: MenuItem[] = [
   {
     category: "Pastries",
     name: "Meatpie / Fishroll",
-    prices: { "10 pcs": 20 },
-    note: "10 pieces",
+    prices: { "15 pcs": 20 },
+    note: "15 pieces",
     image: "/images/meatpie.jpg",
   },
   {
@@ -186,21 +186,21 @@ export const menuData: MenuItem[] = [
   {
     category: "Other Meals",
     name: "Yam Porridge",
-    prices: { "2L": 40, "4L": 75, "6L": 105 },
+    prices: { "2L": 45, "4L": 85, "6L": 120 },
     image: "/images/yam-porridge.jpg",
   },
   {
     category: "Other Meals",
     name: "Beans and Aganyin Sauce",
-    prices: { "2L": 45, "4L": 80, "6L": 115 },
+    prices: { "2L": 50, "4L": 90, "6L": 125 },
     image: "/images/ewa-agonyin.jpg",
   },
   {
     category: "Other Meals",
     name: "Moin-Moin",
-    prices: { "Each (min 7)": 3.5 },
-    note: "£3.50 each (minimum order 7 pieces)",
-    minOrder: 7,
+    prices: { "Each (min 10)": 4.5 },
+    note: "£4.50 per wrap (minimum order 10 wraps)",
+    minOrder: 10,
     image: "/images/moin-moin.jpg",
   },
   {
@@ -212,10 +212,25 @@ export const menuData: MenuItem[] = [
   },
   {
     category: "Other Meals",
-    name: "Ekuru and Sauce",
-    prices: { on_order: true },
-    note: "Available on request",
+    name: "Ekuru",
+    prices: { "Each (min 10)": 3 },
+    note: "£3.00 per wrap (minimum order 10 wraps)",
+    minOrder: 10,
     image: "/images/ekuru-and-sauce.jpg",
+  },
+  {
+    category: "Other Meals",
+    name: "Ekuru Sauce",
+    prices: { "1L": 25 },
+    note: "1 litre",
+    image: "/images/ekuru-and-sauce.jpg",
+  },
+  {
+    category: "Other Meals",
+    name: "Gizdodo",
+    prices: { "2L": 50, "4L": 90, "6L": 125 },
+    note: "Gizzard and plantain sauce",
+    image: "/images/giz-dodo.jpg",
   },
   {
     category: "Other Meals",
@@ -234,11 +249,5 @@ export const menuData: MenuItem[] = [
     name: "Plantain",
     prices: { on_order: true },
     image: "/images/fried-plantain.jpg",
-  },
-  {
-    category: "Other Meals",
-    name: "Gizdodo",
-    prices: { on_order: true },
-    image: "/images/giz-dodo.jpg",
   },
 ];
